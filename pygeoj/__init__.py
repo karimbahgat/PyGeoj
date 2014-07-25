@@ -1,15 +1,45 @@
 """
-A simple Python Geojson file reader and writer.
-Author: Karim Bahgat, 2014
-Contact: karim.bahgat.norway@gmail.com
-License: MIT License
+PyGeoj
+
+**Version: 0.1.0**
+
+**Date: July 25, 2014**
+
+**Author: [Karim Bahgat](https://uit.academia.edu/KarimBahgat)**
+
+**Contact: karim.bahgat.norway@gmail.com**
+
+**Homepage: https://github.com/karimbahgat/pygeoj**
 
 ## Table of Content
+
+- [About](#about)
+  - [System Compatibility](#system-compatibility)
+  - [Dependencies](#dependencies)
+  - [License](#license)
 - [Basic Usage](#basic-usage)
-  - [setup](#setup)
-  - [reading](#reading)
-  - [editing](#editing)
-  - [constructing](#constructing)
+  - [Setup](#setup)
+  - [Reading](#reading)
+  - [Editing](#editing)
+  - [Constructing](#constructing)
+
+## About
+
+A simple Python Geojson file reader and writer.
+
+### System Compatibility
+
+Should work on Python version 2.x and Windows. Has not yet been tested on
+Python 3.x or other OS systems.
+
+### Dependencies
+
+None.
+
+### License
+
+This code is free to share, use, reuse,
+and modify according to the MIT license, see license.txt
 
 ## Basic Usage
 
@@ -98,9 +128,7 @@ Creating a new geojson file from scratch is also easy:
 newfile = pygeoj.new()
 
 # The data coordinate system defaults to long/lat WGS84 or can be manually defined:
-newfile.define_crs(type="link", link="http://spatialreference.org/ref/epsg/26912/esriwkt/", 
-
-link_type="esriwkt")
+newfile.define_crs(type="link", link="http://spatialreference.org/ref/epsg/26912/esriwkt/", link_type="esriwkt")
 ```
 
 The new file can then be populated with custom-made features created with the Feature and Geometry 
@@ -109,13 +137,9 @@ classes:
 
 ```
 _Norwayfeat_ = pygeoj.Feature(properties={"country":"Norway"},
-                          geometry=pygeoj.Geometry(type="Polygon", coordinates=[[(21,3),(33,11),
-
-(44,22)]]))
+                            geometry=pygeoj.Geometry(type="Polygon", coordinates=[[(21,3),(33,11),(44,22)]]))
 _USAfeat_ = pygeoj.Feature(properties={"country":"USA"},
-                          geometry=pygeoj.Geometry(type="Polygon", coordinates=[[(21,3),(33,11),
-
-(44,22)]]))
+                          geometry=pygeoj.Geometry(type="Polygon", coordinates=[[(11,23),(14,5),(66,31)]]))
 newfile.addfeature(_Norwayfeat_)
 newfile.addfeature(_USAfeat_)
 ```
