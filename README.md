@@ -40,6 +40,7 @@
   - [pygeoj.load](#pygeojload)
   - [pygeoj.new](#pygeojnew)
 
+
 ## About
 
 A simple Python Geojson file reader and writer.
@@ -183,6 +184,13 @@ A feature instance.
 | obj | another feature instance, an object with the __geo_interface__ or a geojson dictionary of the Feature type
 | geometry/properties | if obj isn't specified, geometry and properties can be set as arguments directly, with geometry being anything that the Geometry instance can accept, and properties being an optional dictionary.
 
+Attributes include:
+
+| __attribute__    | __description__ 
+| --- | ---
+| geometry | a Geometry instance
+| properties | a properties dictionary
+
   - #### .validate(...):
   Validates that the feature is correctly formatted, and raises an error if not
 
@@ -201,6 +209,14 @@ and requires the files it loads to be the same.
 | --- | --- 
 | filepath | the path of a geojson file to load (optional).
 | data | a complete geojson dictionary to load (optional).
+
+Has the following attributes:
+
+| __attribute__    | __description__ 
+| --- | ---
+| crs | The geojson formatted dictionary of the file's coordinate reference system
+| bbox | The bounding box surrounding all geometries in the file. You may need to call .update_bbox() to make sure this one is up-to-date.
+| common_attributes | Collects and returns a list of attributes/properties/fields common to all features
 
   - #### .add_all_bboxes(...):
   Calculates and adds a bbox attribute to all feature geometries
@@ -259,6 +275,14 @@ Can be created from args, or without any to create an empty one from scratch.
 | --- | --- 
 | obj | another geometry instance, an object with the __geo_interface__ or a geojson dictionary of the Geometry type
 | type/coordinates/bbox | if obj isn't specified, type, coordinates, and optionally bbox can be set as arguments
+
+Has several geometrical attribute values. 
+
+| __attribute__    | __description__ 
+| --- | --- 
+| type | as specified when constructed
+| coordinates | as specified when constructed
+| bbox | if bbox wasn't specified when constructed then it is calculated on-the-fly
 
   - #### .validate(...):
   Validates that the geometry is correctly formatted, and raises an error if not
