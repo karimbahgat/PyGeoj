@@ -5,7 +5,10 @@ Contact: karim.bahgat.norway@gmail.com
 License: MIT License
 """
 
-import json
+try:
+    import simplejson as json
+except:
+    import json
 
 class Geometry:
     """
@@ -359,7 +362,9 @@ class GeojsonFile:
         """
         
         self.update_bbox()
-        json.dump(self._data, open(savepath,"w"), **kwargs)
+        tempfile = open(savepath,"w")
+        json.dump(self._data, tempfile, **kwargs)
+        tempfile.close()
 
     # Internal Methods
                          
