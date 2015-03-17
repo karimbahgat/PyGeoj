@@ -253,6 +253,20 @@ class GeojsonFile:
         else: return None # file must be new and therefore has no feature geometries that can be used to calculate bbox
 
     @property
+    def all_attributes(self):
+        """
+        Collect and return a list of all attributes/properties/fields used in any of the features
+        """
+        features = self._data["features"]
+        if not features: return []
+        elif len(features) == 1: return features[0]["properties"].keys()
+        else:
+            fields = set(features[0]["properties"].keys())
+            for feature in features[1:]:
+                fields.update(feature["properties"].keys())
+            return list(fields)
+
+    @property
     def common_attributes(self):
         """
         Collect and return a list of attributes/properties/fields common to all features
