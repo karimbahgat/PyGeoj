@@ -46,9 +46,9 @@ Basic information about the geojson file can then be extracted, such as:
     testfile.crs # the coordinate reference system
     testfile.common_attributes # retrieves which field attributes are common to all features
 
-Individual features can be accessed either by their index in the features list:
+Individual features can be accessed by their index in the features list:
 
-    testfile.getfeature(3)
+    testfile[3]
 
 Or by iterating through all of them:
 
@@ -67,7 +67,7 @@ The standard Python list operations can be used to edit and swap around the feat
 instance, and then saving to a new geojson file:
 
     testfile[3] = testfile[8]
-    testfile.pop_feature(8)
+    del testfile[8]
     testfile.save("test_edit.geojson")
 
 An existing feature can also be tweaked by using simple attribute-setting:
@@ -90,9 +90,9 @@ Creating a new geojson file from scratch is also easy:
 The new file can then be populated with new features:
 
     newfile.add_feature(properties={"country":"Norway"},
-                        geometry=pygeoj.Geometry(type="Polygon", coordinates=[[(21,3),(33,11),(44,22)]]))
+                        geometry={type="Polygon", coordinates=[[(21,3),(33,11),(44,22)]]} )
     newfile.add_feature(properties={"country":"USA"},
-                        geometry=pygeoj.Geometry(type="Polygon", coordinates=[[(11,23),(14,5),(66,31)]]))
+                        geometry={type="Polygon", coordinates=[[(11,23),(14,5),(66,31)]]} )
 
 Finally, some useful additional information can be added to top off the geojson file before saving it to
 file:
@@ -120,7 +120,7 @@ Karim Bahgat (2015)
 
 """
 
-__version__ = "0.2"
+__version__ = "0.21"
 
 try:
     import simplejson as json
@@ -174,9 +174,12 @@ class Geometry:
         try: self._data[name] = value # all attribute setting will directly be redirected to adding or changing the geojson dictionary entries
         except AttributeError: self.__dict__[name] = value # except for first time when the _data attribute has to be set
 
+    def __str__(self):
+        return "Geometry(type=%s, coordinates=%s, bbox=%s)" % (self.type, self.coordinates, self.bbox)
+
     @property
     def __geo_interface__(self):
-        return self._data
+        return self._data.copy()
 
     # Attributes
 
@@ -238,7 +241,7 @@ class Geometry:
 
         # then validate coordinate structures
         if self.type == "Point":
-            if not len(coords) == 1: raise Exception("Point must be one coordinate")
+            if not len(coords) == 2: raise Exception("Point must be one coordinate pair")
         elif self.type in ("MultiPoint","LineString"):
             if not len(coords) > 1: raise Exception("MultiPoint and LineString must have more than one coordinates")
         elif self.type == "MultiLineString":
@@ -259,7 +262,7 @@ class Geometry:
 
 
 
-class Feature:
+class Feature(object):
     """
     A feature instance, as an object representation of GeoJSON's feature dictinoary item,
     with some convenience methods. 
@@ -280,14 +283,21 @@ class Feature:
         - **properties** (optional): A dictionary of key-value property pairs.
         """
         if isinstance(obj, Feature):
-            self.geometry = Geometry(obj.geometry)
-            self.properties = obj.properties.copy()
+            # from scrath as copy of another feat instance
+            self._data = {"type":"Feature",
+                          "geometry":Geometry(obj.geometry).__geo_interface__,
+                          "properties":obj.properties.copy() }
         elif isinstance(obj, dict):
-            self.geometry = Geometry(obj["geometry"])
-            self.properties = obj["properties"]
+            # comes straight from geojfile _iter_, so must use original dict
+            self._data = obj
         elif geometry:
-            self.geometry = Geometry(geometry)
-            self.properties = properties
+            # from scratch from geometry/properties
+            self._data = {"type":"Feature",
+                          "geometry":Geometry(geometry).__geo_interface__,
+                          "properties":properties }
+
+    def __str__(self):
+        return "Feature(geometry=%s, properties=%s)" % (self.geometry, self.properties)
 
     @property
     def __geo_interface__(self):
@@ -295,6 +305,25 @@ class Feature:
                     "geometry":self.geometry.__geo_interface__,
                     "properties":self.properties }
         return geojdict
+
+    @property
+    def properties(self):
+        return self._data["properties"]
+
+    @properties.setter
+    def properties(self, value):
+        self._data["properties"].clear()
+        self._data["properties"].update(**value)
+
+    @property
+    def geometry(self):
+        return Geometry(self._data["geometry"])
+
+    @geometry.setter
+    def geometry(self, value):
+        if isinstance(value, Geometry):
+            value = value.__geo_interface__
+        self._data["geometry"].update(**value)
 
     def validate(self):
         """
@@ -310,6 +339,7 @@ class Feature:
         """
         if not isinstance(self.properties, dict): raise Exception("The 'properties' value of a geojson feature must be a dictionary type")
         self.geometry.validate()
+        return True
     
 
 class GeojsonFile:
@@ -318,10 +348,10 @@ class GeojsonFile:
 
     Attributes:
 
-    - **crs**: The geojson formatted dictionary of the file's coordinate reference system.
-    - **bbox**: The bounding box surrounding all geometries in the file. You may need to call .update_bbox() to make sure this one is up-to-date.
-    - **all_attributes**: Collect and return a list of all attributes/properties/fields used in any of the features.
-    - **common_attributes**: Collects and returns a list of attributes/properties/fields common to all features.
+    - **crs**: The geojson formatted dictionary of the file's coordinate reference system. Read only. Call .define_crs() to change it. 
+    - **bbox**: The bounding box surrounding all geometries in the file. Read only. You may need to call .update_bbox() to make sure this one is up-to-date.
+    - **all_attributes**: Collect and return a list of all attributes/properties/fields used in any of the features. Read only. 
+    - **common_attributes**: Collects and returns a list of attributes/properties/fields common to all features. Read only. 
     """
     
     def __init__(self, filepath=None, data=None, **kwargs):
@@ -357,25 +387,27 @@ class GeojsonFile:
     def __len__(self):
         return len(self._data["features"])
 
-    def __setattr__(self, name, value):
-        """Set a class attribute like obj.attr = value"""
-        try: self._data[name] = value # all attribute setting will directly be redirected to adding or changing the geojson dictionary entries
-        except AttributeError: self.__dict__[name] = value # except for first time when the _data attribute has to be set
+##    def __setattr__(self, name, value):
+##        """Set a class attribute like obj.attr = value"""
+##        try: self._data[name] = value # all attribute setting will directly be redirected to adding or changing the geojson dictionary entries
+##        except AttributeError: self.__dict__[name] = value # except for first time when the _data attribute has to be set
 
     def __getitem__(self, index):
         """Get a feature based on its index, like geojfile[7]"""
         return Feature(self._data["features"][index])
 
     def __setitem__(self, index, feature):
-        """Replace a feature based on its index with a new one (must have \_\_geo_interface__ property),
+        """Replace a feature based on its index with a new one (same requirements as Feature's obj arg),
         like geojfile[7] = newfeature
         """
-        self._data["features"][index] = feature.__geo_interface__
+        self._data["features"][index] = feature
+
+    def __delitem__(self, index):
+        """Delete a feature based on its index, like del geojfile[7]"""
+        del self._data["features"][index]
         
     def __iter__(self):
-        """Iterates through and returns a record list and a
-        shape instance for each feature in the file.
-        """
+        """Iterates through and yields each feature in the file."""
         for featuredict in self._data["features"]:
             yield Feature(featuredict)
 
@@ -427,7 +459,7 @@ class GeojsonFile:
 
     # Methods
 
-    def add_feature(self,  obj=None, geometry=None, properties={}):
+    def add_feature(self, obj=None, geometry=None, properties={}):
         """
         Adds a given feature. If obj isn't specified, geometry and properties can be set as arguments directly.
 
@@ -437,23 +469,23 @@ class GeojsonFile:
         - **geometry** (optional): Anything that the Geometry instance can accept.
         - **properties** (optional): A dictionary of key-value property pairs.
         """
-        feature = Feature(feature)
-        self._data["features"].append(feature.__geo_interface__)
+        if isinstance(obj, Feature):
+            feat = obj.__geo_interface__
+        elif isinstance(obj, dict):
+            feat = obj.copy()
+        elif geometry:
+            feat = dict(geometry=Geometry(geometry).__geo_interface__, properties=properties)
+        self._data["features"].append(feat)
 
-    def pop_feature(self, index):
-        """
-        Gets and removes the feature stored at the specified index position. 
+    def replace_feature(self, oldindex, newfeature):
+        self[oldindex] = newfeature
 
-        Parameters:
+    def get_feature(self, oldindex, newfeature):
+        return self[oldindex]
 
-        - **index**: The index position of the feature to remove.
-
-        Returns:
-
-        - A Feature instance. 
-        """
-        return self._data["features"].pop(index)
-
+    def remove_feature(oldindex):
+        del self[oldindex]
+        
     def define_crs(self, type, name=None, link=None, link_type=None):
         """
         Defines the coordinate reference system for the geojson file.
