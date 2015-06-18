@@ -56,12 +56,13 @@ Basic information about the geojson file can then be extracted, such as:
     testfile.crs # the coordinate reference system
     testfile.common_attributes # retrieves which field attributes are common to all features
 
-Individual features can be accessed either by their index in the
-features list:
+Individual features can be accessed by their index in the features list:
 
 ::
 
-    testfile.getfeature(3)
+    testfile[3]
+    # or
+    testfile.get_feature(3)
 
 Or by iterating through all of them:
 
@@ -75,6 +76,7 @@ A feature can be inspected in various ways:
 ::
 
     feature.properties
+    feature.geometry.type
     feature.geometry.coordinates
     feature.geometry.bbox
 
@@ -88,7 +90,9 @@ file:
 ::
 
     testfile[3] = testfile[8]
-    testfile.pop_feature(8)
+    # or testfile.replace_feature(3, testfile[8])
+    del testfile[8]
+    # or testfile.remove_feature(8)
     testfile.save("test_edit.geojson")
 
 An existing feature can also be tweaked by using simple
@@ -119,9 +123,9 @@ The new file can then be populated with new features:
 ::
 
     newfile.add_feature(properties={"country":"Norway"},
-                        geometry=pygeoj.Geometry(type="Polygon", coordinates=[[(21,3),(33,11),(44,22)]]))
+                        geometry={type="Polygon", coordinates=[[(21,3),(33,11),(44,22)]]} )
     newfile.add_feature(properties={"country":"USA"},
-                        geometry=pygeoj.Geometry(type="Polygon", coordinates=[[(11,23),(14,5),(66,31)]]))
+                        geometry={type="Polygon", coordinates=[[(11,23),(14,5),(66,31)]]} )
 
 Finally, some useful additional information can be added to top off the
 geojson file before saving it to file:

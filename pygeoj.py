@@ -49,6 +49,8 @@ Basic information about the geojson file can then be extracted, such as:
 Individual features can be accessed by their index in the features list:
 
     testfile[3]
+    # or
+    testfile.get_feature(3)
 
 Or by iterating through all of them:
 
@@ -58,6 +60,7 @@ Or by iterating through all of them:
 A feature can be inspected in various ways:
 
     feature.properties
+    feature.geometry.type
     feature.geometry.coordinates
     feature.geometry.bbox
 
@@ -67,7 +70,9 @@ The standard Python list operations can be used to edit and swap around the feat
 instance, and then saving to a new geojson file:
 
     testfile[3] = testfile[8]
+    # or testfile.replace_feature(3, testfile[8])
     del testfile[8]
+    # or testfile.remove_feature(8)
     testfile.save("test_edit.geojson")
 
 An existing feature can also be tweaked by using simple attribute-setting:
@@ -120,7 +125,7 @@ Karim Bahgat (2015)
 
 """
 
-__version__ = "0.21"
+__version__ = "0.22"
 
 try:
     import simplejson as json
@@ -477,14 +482,64 @@ class GeojsonFile:
             feat = dict(geometry=Geometry(geometry).__geo_interface__, properties=properties)
         self._data["features"].append(feat)
 
-    def replace_feature(self, oldindex, newfeature):
-        self[oldindex] = newfeature
+    def get_feature(self, index):
+        """
+        Gets a feature based on its index. Same as feat[index]. 
 
-    def get_feature(self, oldindex, newfeature):
+        Parameters:
+
+        - **index**: The index position of the feature to get.
+
+        Returns:
+
+        - A Feature instance. 
+        """
         return self[oldindex]
 
+    def replace_feature(self, oldindex, newfeature):
+        """
+        Replaces the feature at an index position with another. 
+
+        Parameters:
+
+        - **oldindex**: The index position of the feature to be replaced. 
+        - **newfeature**: Anything that the Feature instance can accept.
+        """
+        self[oldindex] = newfeature
+
     def remove_feature(oldindex):
+        """
+        Removes a feature at a specified index position. 
+
+        Parameters:
+
+        - **oldindex**: The index position of the feature to be removed. 
+        """
         del self[oldindex]
+
+    def addfeature(self, feature):
+        """
+        Backwards compatible legacy method. WARNING: Will be depreceated. 
+        """
+        self.add_feature(obj=feature)
+
+    def getfeature(self, index):
+        """
+        Backwards compatible legacy method. WARNING: Will be depreceated. 
+        """
+        self.get_feature(index)
+
+    def replacefeature(self, oldindex, newfeature):
+        """
+        Backwards compatible legacy method. WARNING: Will be depreceated. 
+        """
+        self.replace_feature(oldindex, newfeature)
+
+    def removefeature(oldindex):
+        """
+        Backwards compatible legacy method. WARNING: Will be depreceated. 
+        """
+        self.remove_feature(oldindex)
         
     def define_crs(self, type, name=None, link=None, link_type=None):
         """
