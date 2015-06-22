@@ -26,7 +26,7 @@ PyGeoj is installed with pip from the commandline:
     pip install pygeoj
 
 It also works to just place the "pygeoj" package folder in an importable
-location like "C:/PythonXX/Lib/site-packages".
+location like "PythonXX/Lib/site-packages".
 
 Example Usage
 -------------
@@ -46,6 +46,8 @@ geojson file to be a "FeatureCollection"):
 ::
 
     testfile = pygeoj.load(filepath="testfile.geojson")
+    # or
+    testfile = pygeoj.load(data=dict(...))
 
 Basic information about the geojson file can then be extracted, such as:
 
@@ -54,7 +56,8 @@ Basic information about the geojson file can then be extracted, such as:
     len(testfile) # the number of features
     testfile.bbox # the bounding box region of the entire file
     testfile.crs # the coordinate reference system
-    testfile.common_attributes # retrieves which field attributes are common to all features
+    testfile.all_attributes # retrieves the combined set of all feature attributes
+    testfile.common_attributes # retrieves only those field attributes that are common to all features
 
 Individual features can be accessed by their index in the features list:
 
