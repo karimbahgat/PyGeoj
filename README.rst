@@ -109,6 +109,13 @@ attribute-setting:
     # borrow the geometry of the 16th feature
     feature.geometry = testfile[16].geometry
 
+Note that when changing geometries or coordinates, you must remember to
+update its bbox to clear away any older stored bbox information.
+
+::
+
+    feature.geometry.update_bbox()
+
 Constructing
 ~~~~~~~~~~~~
 
@@ -136,6 +143,7 @@ geojson file before saving it to file:
 ::
 
     newfile.add_all_bboxes()
+    newfile.update_bbox()
     newfile.add_unique_id()
     newfile.save("test_construct.geojson")
 
@@ -155,3 +163,13 @@ Credits:
 --------
 
 Karim Bahgat (2015)
+
+Changes
+-------
+
+0.2.4 (2015-07-11)
+~~~~~~~~~~~~~~~~~~
+
+-  Fixed bug with add\_all\_bboxes() not updating existing bboxes
+-  Fixed bug with GeojsonFile bbox sometimes being calculated wrong.
+-  Added update\_bbox() on individual Geometry objects.

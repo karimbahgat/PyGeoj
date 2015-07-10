@@ -86,6 +86,11 @@ An existing feature can also be tweaked by using simple attribute-setting:
     # borrow the geometry of the 16th feature
     feature.geometry = testfile[16].geometry
 
+Note that when changing geometries or coordinates, you must remember to update
+its bbox to clear away any older stored bbox information.
+
+    feature.geometry.update_bbox()
+
 ### Constructing
 
 Creating a new geojson file from scratch is also easy:
@@ -106,6 +111,7 @@ Finally, some useful additional information can be added to top off the geojson 
 file:
  
     newfile.add_all_bboxes()
+    newfile.update_bbox()
     newfile.add_unique_id()
     newfile.save("test_construct.geojson")
 
@@ -128,7 +134,7 @@ Karim Bahgat (2015)
 
 """
 
-__version__ = "0.2.3"
+__version__ = "0.2.4"
 
 try:
     import simplejson as json
@@ -225,6 +231,16 @@ class Geometry:
         return self._data["coordinates"]
 
     # Methods
+
+    def update_bbox(self):
+        """
+        Removes any existing stored bbox attribute from the geojson dictionary.
+        This way, until you set the bbox attribute again, the bbox will always
+        be calculated on the fly and be up to date.
+        Useful after making changes to the geometry coordinates.
+        """
+        if "bbox" in self._data:
+            del self._data["bbox"]
 
     def validate(self):
         """
@@ -382,10 +398,12 @@ class GeojsonFile:
         if filepath:
             data = self._loadfilepath(filepath, **kwargs)
             if self._validate(data):
-                self._data = self._prepdata(data)
+                self._data = data
+                self._prepdata()
         elif data:
             if self._validate(data):
-                self._data = self._prepdata(data)
+                self._data = data
+                self._prepdata()
         else:
             self._data = dict([("type","FeatureCollection"),
                                ("features",[]),
@@ -433,9 +451,9 @@ class GeojsonFile:
 
     @property
     def bbox(self):
-        if self._data.get("bbox"):
-            return self._data["bbox"]
-        else: return None # file must be new and therefore has no feature geometries that can be used to calculate bbox
+        if not self._data.get("bbox"):
+            self.update_bbox()
+        return self._data["bbox"]
 
     @property
     def all_attributes(self):
@@ -577,16 +595,9 @@ class GeojsonFile:
         automatically updates the bbox.
         """
 
-        firstfeature = Feature(self._data["features"][0])
-        xmin,xmax,ymin,ymax = firstfeature.geometry.bbox
-        for _featuredict in self._data["features"][1:]:
-            _xmin,_xmax,_ymin,_ymax = Feature(_featuredict).geometry.bbox
-            if _xmin < xmin: xmin = _xmin
-            elif _xmax > xmax: xmax = _xmax
-            if _ymin < ymin: ymin = _ymin
-            elif _ymax > ymax: ymax = _ymax
-            
-        self._data["bbox"] = [xmin,ymin,xmax,ymax]
+        xmins, ymins, xmaxs, ymaxs = zip(*(feat.geometry.bbox for feat in self))
+        bbox = [min(xmins), min(ymins), max(xmaxs), max(ymaxs)] 
+        self._data["bbox"] = bbox
 
     def add_unique_id(self):
         """
@@ -607,11 +618,10 @@ class GeojsonFile:
 
     def add_all_bboxes(self):
         """
-        Calculates and adds a bbox attribute to all feature geometries.
+        Calculates and adds a bbox attribute to the geojson entry of all feature geometries, updating any existing ones.
         """
         for feature in self._data["features"]:
-            if not feature["geometry"].get("bbox"):
-                feature["geometry"]["bbox"] = Feature(feature).geometry.bbox
+            feature["geometry"]["bbox"] = Feature(feature).geometry.bbox
 
     def save(self, savepath, **kwargs):
         """
@@ -649,29 +659,17 @@ class GeojsonFile:
         data = json.load(open(filepath,"rU"), **kwargs)
         return data
 
-    def _prepdata(self, data):
+    def _prepdata(self):
         """Adds potentially missing items to the geojson dictionary"""
         
         # if missing, compute and add bbox
-        if not data.get("bbox"):
-            
-            firstfeature = Feature(data["features"][0])
-            xmin,xmax,ymin,ymax = firstfeature.geometry.bbox
-            for _featuredict in data["features"][1:]:
-                _xmin,_xmax,_ymin,_ymax = Feature(_featuredict).geometry.bbox
-                if _xmin < xmin: xmin = _xmin
-                elif _xmax > xmax: xmax = _xmax
-                if _ymin < ymin: ymin = _ymin
-                elif _ymax > ymax: ymax = _ymax
-                
-            data["bbox"] = [xmin,ymin,xmax,ymax]
-                
+        if not self._data.get("bbox"):
+            self.update_bbox()
+
         # if missing, set crs to default crs (WGS84), see http://geojson.org/geojson-spec.html
-        if not data.get("crs"):
-            data["crs"] = {"type":"name",
-                           "properties":{"name":"urn:ogc:def:crs:OGC:2:84"}}
-            
-        return data
+        if not self._data.get("crs"):
+            self._data["crs"] = {"type":"name",
+                               "properties":{"name":"urn:ogc:def:crs:OGC:2:84"}}
 
 
 
