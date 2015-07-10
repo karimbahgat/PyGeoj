@@ -1,0 +1,8 @@
+
+## Changes
+
+### 0.2.4 (2015-07-11)
+
+- Fixed bug with add_all_bboxes() not updating existing bboxes
+- Fixed bug with GeojsonFile bbox sometimes being calculated wrong.
+- Added update_bbox() on individual Geometry objects.
