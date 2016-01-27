@@ -254,6 +254,10 @@ class Geometry:
 
         - An Exception if not valid. 
         """
+
+        # validate has type and coordinates keys
+        if "type" not in self._data.keys() or "coordinates" not in self._data.keys():
+            raise Exception("A geometry dictionary or instance must have the type and coordinates entries")
         
         # first validate geometry type
         if not self.type in ("Point","MultiPoint","LineString","MultiLineString","Polygon","MultiPolygon"):
@@ -269,14 +273,12 @@ class Geometry:
         elif self.type in ("MultiPoint","LineString"):
             if not len(coords) > 1: raise Exception("MultiPoint and LineString must have more than one coordinates")
         elif self.type == "MultiLineString":
-            if not len(coords) > 1: raise Exception("MultiLineString must have more than one LineString member")
             for line in coords:
                 if not len(line) > 1: raise Exception("All LineStrings in a MultiLineString must have more than one coordinate")
         elif self.type == "Polygon":
             for exterior_or_holes in coords:
                 if not len(exterior_or_holes) >= 3: raise Exception("The exterior and all holes in a Polygon must have at least 3 coordinates")
         elif self.type == "MultiPolygon":
-            if not len(coords) > 1: raise Exception("MultiPolygon must have more than one Polygon member")
             for eachmulti in coords:
                 for exterior_or_holes in eachmulti:
                     if not len(exterior_or_holes) >= 3: raise Exception("The exterior and all holes in all Polygons of a MultiPolygon must have at least 3 coordinates")
@@ -378,7 +380,7 @@ class GeojsonFile:
     - **common_attributes**: Collects and returns a list of attributes/properties/fields common to all features. Read only. 
     """
     
-    def __init__(self, filepath=None, data=None, **kwargs):
+    def __init__(self, filepath=None, data=None, skiperrors=False, **kwargs):
         """
         Can load from data or from a file,
         which can then be read or edited.
@@ -395,13 +397,14 @@ class GeojsonFile:
         - **filepath** (optional): The path of a geojson file to load.
         - **data** (optional): A complete geojson dictionary to load.
         """
+        
         if filepath:
             data = self._loadfilepath(filepath, **kwargs)
-            if self._validate(data):
+            if validate(data, skiperrors=skiperrors):
                 self._data = data
                 self._prepdata()
         elif data:
-            if self._validate(data):
+            if validate(data, skiperrors=skiperrors):
                 self._data = data
                 self._prepdata()
         else:
@@ -638,17 +641,6 @@ class GeojsonFile:
         tempfile.close()
 
     # Internal Methods
-                         
-    def _validate(self, data):
-        """Checks that the geojson data is a feature collection, and that it
-        contains a proper "features" attribute, and returns True if so."""
-        if not data["type"] == "FeatureCollection":
-            raise ValueError("The geojson data needs to be a feature collection")
-        if data.get("features"):
-            if not isinstance(data["features"], list):
-                raise ValueError("The features property needs to be a list")
-            return True
-        else: raise ValueError("The FeatureCollection needs to contain a 'features' property")
 
     def _loadfilepath(self, filepath, **kwargs):
         """This loads a geojson file into a geojson python
@@ -656,7 +648,7 @@ class GeojsonFile:
         
         Note: to load with a different text encoding use the encoding argument.
         """
-        data = json.load(open(filepath,"rU"), **kwargs)
+        data = json.load(open(filepath), **kwargs)
         return data
 
     def _prepdata(self):
@@ -674,6 +666,34 @@ class GeojsonFile:
 
 
 # User functions
+
+def validate(data, skiperrors=False):
+    """Checks that the geojson data is a feature collection, that it
+    contains a proper "features" attribute, and that all features are valid too.
+    Returns True if all goes well.
+
+    - skiperrors will throw away any features that fail to validate.
+    """
+
+    if not data["type"] == "FeatureCollection":
+        raise ValueError("The geojson data needs to be a feature collection")
+    if data.get("features"):
+        if not isinstance(data["features"], list):
+            raise ValueError("The features property needs to be a list")
+    else: raise ValueError("The FeatureCollection needs to contain a 'features' property")
+
+    if skiperrors:
+        for featuredict in data["features"]:
+            feat = Feature(featuredict)
+            try: feat.validate()
+            except: data["features"].remove(featuredict)
+
+    else:
+        for featuredict in data["features"]:
+            feat = Feature(featuredict)
+            feat.validate() 
+
+    return True
 
 def load(filepath=None, data=None, **kwargs):
     """
