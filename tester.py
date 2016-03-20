@@ -7,11 +7,11 @@ testfile.add_feature(geometry=gj.Geometry(type="Point", coordinates=[(12,12)]),
                      properties=dict(hello=1, world=2))
 
 for feat in testfile:
-    feat.properties["new"] = "shit"
+    feat.properties["new"] = "stuff"
     feat.geometry.coordinates = (99,99)
     #feat.properties = dict(new="shit")
     #feat.geometry = gj.Geometry(type="Point", coordinates=(7777,7777))
-    print "hmm", feat.geometry, feat.properties
+    print "hmm", feat.geometry, feat.properties, feat.__geo_interface__
 
 for feat in testfile:
-    print feat, feat.geometry, feat.properties, feat.validate()
+    print feat, feat.geometry, feat.properties, feat.__geo_interface__, feat.validate()

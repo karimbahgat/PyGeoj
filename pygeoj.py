@@ -298,7 +298,7 @@ class Feature(object):
     - **geometry**: A Geometry instance.
     - **properties**: A properties dictionary
     """
-    def __init__(self, obj=None, geometry=None, properties={}):
+    def __init__(self, obj=None, geometry=None, properties=None):
         """
         If obj isn't specified, geometry and properties can be set as arguments directly.
 
@@ -308,6 +308,8 @@ class Feature(object):
         - **geometry** (optional): Anything that the Geometry instance can accept.
         - **properties** (optional): A dictionary of key-value property pairs.
         """
+        properties = properties or {}
+        
         if isinstance(obj, Feature):
             # from scrath as copy of another feat instance
             self._data = {"type":"Feature",
@@ -315,12 +317,13 @@ class Feature(object):
                           "properties":obj.properties.copy() }
         elif isinstance(obj, dict):
             # comes straight from geojfile _iter_, so must use original dict
+            # Note: user should not specify directly as dict, since won't validate, any better way?
             self._data = obj
         elif geometry:
             # from scratch from geometry/properties
             self._data = {"type":"Feature",
                           "geometry":Geometry(geometry).__geo_interface__,
-                          "properties":properties }
+                          "properties":properties.copy() }
 
     def __str__(self):
         return "Feature(geometry=%s, properties=%s)" % (self.geometry, self.properties)
@@ -329,7 +332,7 @@ class Feature(object):
     def __geo_interface__(self):
         geojdict = {"type":"Feature",
                     "geometry":self.geometry.__geo_interface__,
-                    "properties":self.properties }
+                    "properties":self.properties.copy() }
         return geojdict
 
     @property
@@ -363,6 +366,8 @@ class Feature(object):
 
         - An Exception if not valid. 
         """
+        if not all((key in self._data for key in ["type","geometry","properties"])): raise Exception("A geojson feature dictionary must contain a type, geometry, and properites key.")
+        if not self._data["type"] == "Feature": raise Exception("The 'type' value of a geojson feature must be 'Feature'")
         if not isinstance(self.properties, dict): raise Exception("The 'properties' value of a geojson feature must be a dictionary type")
         self.geometry.validate()
         return True
@@ -442,6 +447,7 @@ class GeojsonFile:
 
     @property
     def __geo_interface__(self):
+        # Note: should copy root dict and all subdicts
         return self._data
 
     # Attributes
@@ -488,7 +494,7 @@ class GeojsonFile:
 
     # Methods
 
-    def add_feature(self, obj=None, geometry=None, properties={}):
+    def add_feature(self, obj=None, geometry=None, properties=None):
         """
         Adds a given feature. If obj isn't specified, geometry and properties can be set as arguments directly.
 
@@ -498,12 +504,14 @@ class GeojsonFile:
         - **geometry** (optional): Anything that the Geometry instance can accept.
         - **properties** (optional): A dictionary of key-value property pairs.
         """
+        properties = properties or {}
         if isinstance(obj, Feature):
-            feat = obj.__geo_interface__
+            # instead of creating copy, the original feat should reference the same one that was added here
+            feat = obj._data
         elif isinstance(obj, dict):
             feat = obj.copy()
         elif geometry:
-            feat = dict(geometry=Geometry(geometry).__geo_interface__, properties=properties)
+            feat = Feature(geometry=geometry, properties=properties).__geo_interface__
         self._data["features"].append(feat)
 
     def get_feature(self, index):
