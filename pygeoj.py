@@ -511,7 +511,9 @@ class GeojsonFile:
         elif isinstance(obj, dict):
             feat = obj.copy()
         elif geometry:
-            feat = Feature(geometry=geometry, properties=properties).__geo_interface__
+            feat = {"type":"Feature",
+                    "geometry":Geometry(geometry).__geo_interface__,
+                    "properties":properties}
         self._data["features"].append(feat)
 
     def get_feature(self, index):
