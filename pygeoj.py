@@ -596,6 +596,7 @@ class GeojsonFile:
             self.crs["properties"]["href"] = link
             if link_type:
                 self.crs["properties"]["type"] = link_type
+        self._data['crs'] = self.crs
 
     def update_bbox(self):
         """
