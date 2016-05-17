@@ -587,15 +587,15 @@ class GeojsonFile:
         - **link_type**: The type of crs link, optional if type is "link". 
         """
         if not type in ("name","link"): raise Exception("type must be either 'name' or 'link'")
-        self.crs = {"type":type, "properties":{} }
+        crs = self._data["crs"] = {"type":type, "properties":{} }
         if type == "name":
             if not name: raise Exception("name argument must be given")
-            self.crs["properties"]["name"] = name
+            crs["properties"]["name"] = name
         elif type == "link":
             if not link: raise Exception("link argument must be given")
-            self.crs["properties"]["href"] = link
+            crs["properties"]["href"] = link
             if link_type:
-                self.crs["properties"]["type"] = link_type
+                crs["properties"]["type"] = link_type
 
     def update_bbox(self):
         """
