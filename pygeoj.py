@@ -201,6 +201,10 @@ class Geometry:
     def type(self):
         return self._data["type"]
 
+    @type.setter
+    def type(self, value):
+        self._data["type"] = value
+
     @property
     def bbox(self):
         if self._data.get("bbox"): return self._data["bbox"]
@@ -242,9 +246,13 @@ class Geometry:
         if "bbox" in self._data:
             del self._data["bbox"]
 
-    def validate(self):
+    def validate(self, fixerrors=True):
         """
         Validates that the geometry is correctly formatted according to the geometry type. 
+
+        Parameters:
+
+        - **fixerrors** (optional): Attempts to fix minor errors without raising exceptions (defaults to True)
 
         Returns:
         
@@ -256,12 +264,28 @@ class Geometry:
         """
 
         # validate has type and coordinates keys
-        if "type" not in self._data.keys() or "coordinates" not in self._data.keys():
+        if "type" not in self._data or "coordinates" not in self._data:
             raise Exception("A geometry dictionary or instance must have the type and coordinates entries")
         
         # first validate geometry type
         if not self.type in ("Point","MultiPoint","LineString","MultiLineString","Polygon","MultiPolygon"):
-            raise Exception('Invalid geometry type. Must be one of: "Point","MultiPoint","LineString","MultiLineString","Polygon","MultiPolygon"')
+            if fixerrors:
+                coretype = self.type.lower().replace("multi","")
+                if coretype == "point":
+                    newtype = "Point"
+                elif coretype == "linestring":
+                    newtype = "LineString"
+                elif coretype == "polygon":
+                    newtype = "Polygon"
+                else:
+                    raise Exception('Invalid geometry type. Must be one of: "Point","MultiPoint","LineString","MultiLineString","Polygon","MultiPolygon"')
+                
+                if self.type.lower().startswith("multi"):
+                    newtype = "Multi" + newtype
+                    
+                self.type = newtype
+            else:
+                raise Exception('Invalid geometry type. Must be one of: "Point","MultiPoint","LineString","MultiLineString","Polygon","MultiPolygon"')
 
         # then validate coordinate data type
         coords = self._data["coordinates"]
@@ -354,9 +378,13 @@ class Feature(object):
             value = value.__geo_interface__
         self._data["geometry"].update(**value)
 
-    def validate(self):
+    def validate(self, fixerrors=True):
         """
-        Validates that the feature is correctly formatted. 
+        Validates that the feature is correctly formatted.
+
+        Parameters:
+
+        - **fixerrors** (optional): Attempts to fix minor errors without raising exceptions (defaults to True)
 
         Returns:
         
@@ -366,10 +394,22 @@ class Feature(object):
 
         - An Exception if not valid. 
         """
-        if not all((key in self._data for key in ["type","geometry","properties"])): raise Exception("A geojson feature dictionary must contain a type, geometry, and properites key.")
-        if not self._data["type"] == "Feature": raise Exception("The 'type' value of a geojson feature must be 'Feature'")
-        if not isinstance(self.properties, dict): raise Exception("The 'properties' value of a geojson feature must be a dictionary type")
-        self.geometry.validate()
+        if not "type" in self._data or self._data["type"] != "Feature":
+            if fixerrors:
+                self._data["type"] = "Feature"
+            else:
+                raise Exception("A geojson feature dictionary must contain a type key and it must be named 'Feature'.")
+        if not "geometry" in self._data:
+            if fixerrors:
+                self.geometry = Geometry() # nullgeometry
+            else:
+                raise Exception("A geojson feature dictionary must contain a geometry key.")
+        if not "properties" in self._data or not isinstance(self.properties,dict):
+            if fixerrors:
+                self._data["properties"] = dict()
+            else:
+                raise Exception("A geojson feature dictionary must contain a properties key and it must be a dictionary type.")
+        self.geometry.validate(fixerrors)
         return True
     
 
@@ -385,7 +425,7 @@ class GeojsonFile:
     - **common_attributes**: Collects and returns a list of attributes/properties/fields common to all features. Read only. 
     """
     
-    def __init__(self, filepath=None, data=None, skiperrors=False, **kwargs):
+    def __init__(self, filepath=None, data=None, skiperrors=False, fixerrors=True, **kwargs):
         """
         Can load from data or from a file,
         which can then be read or edited.
@@ -401,15 +441,17 @@ class GeojsonFile:
         
         - **filepath** (optional): The path of a geojson file to load.
         - **data** (optional): A complete geojson dictionary to load.
+        - **skiperrors** (optional): Throws away any features that fail to validate (defaults to False).
+        - **fixerrors** (optional): Attempts to auto fix any minor errors without raising exceptions (defaults to True).
         """
         
         if filepath:
             data = self._loadfilepath(filepath, **kwargs)
-            if validate(data, skiperrors=skiperrors):
+            if validate(data, skiperrors=skiperrors, fixerrors=fixerrors):
                 self._data = data
                 self._prepdata()
         elif data:
-            if validate(data, skiperrors=skiperrors):
+            if validate(data, skiperrors=skiperrors, fixerrors=fixerrors):
                 self._data = data
                 self._prepdata()
         else:
@@ -675,17 +717,26 @@ class GeojsonFile:
 
 # User functions
 
-def validate(data, skiperrors=False):
+def validate(data, skiperrors=False, fixerrors=True):
     """Checks that the geojson data is a feature collection, that it
     contains a proper "features" attribute, and that all features are valid too.
     Returns True if all goes well.
 
     - skiperrors will throw away any features that fail to validate.
+    - fixerrors will attempt to auto fix any minor errors without raising exceptions.
     """
 
+    if not "type" in data:
+        if fixerrors:
+            data["type"] = "FeatureCollection"
+        else:
+            raise ValueError("The geojson data needs to have a type key")
     if not data["type"] == "FeatureCollection":
-        raise ValueError("The geojson data needs to be a feature collection")
-    if data.get("features"):
+        if fixerrors:
+            data["type"] = "FeatureCollection"
+        else:
+            raise ValueError("The geojson data needs to be a feature collection")
+    if "features" in data:
         if not isinstance(data["features"], list):
             raise ValueError("The features property needs to be a list")
     else: raise ValueError("The FeatureCollection needs to contain a 'features' property")
@@ -693,13 +744,13 @@ def validate(data, skiperrors=False):
     if skiperrors:
         for featuredict in data["features"]:
             feat = Feature(featuredict)
-            try: feat.validate()
+            try: feat.validate(fixerrors)
             except: data["features"].remove(featuredict)
 
     else:
         for featuredict in data["features"]:
             feat = Feature(featuredict)
-            feat.validate() 
+            feat.validate(fixerrors) 
 
     return True
 
