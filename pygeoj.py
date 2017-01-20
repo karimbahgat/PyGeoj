@@ -134,7 +134,7 @@ Karim Bahgat (2015)
 
 """
 
-__version__ = "0.2.4"
+__version__ = "0.2.5"
 
 try:
     import simplejson as json
@@ -189,17 +189,20 @@ class Geometry:
         except AttributeError: self.__dict__[name] = value # except for first time when the _data attribute has to be set
 
     def __str__(self):
-        return "Geometry(type=%s, coordinates=%s, bbox=%s)" % (self.type, self.coordinates, self.bbox)
+        if self.type == "Null":
+            return "Geometry(type='Null')"
+        else:
+            return "Geometry(type=%s, coordinates=%s, bbox=%s)" % (self.type, self.coordinates, self.bbox)
 
     @property
     def __geo_interface__(self):
-        return self._data.copy()
+        return self._data.copy() if self._data else None
 
     # Attributes
 
     @property
     def type(self):
-        return self._data["type"]
+        return self._data["type"] if self._data else "Null"
 
     @type.setter
     def type(self, value):
@@ -209,7 +212,9 @@ class Geometry:
     def bbox(self):
         if self._data.get("bbox"): return self._data["bbox"]
         else:
-            if self.type == "Point":
+            if self.type == "Null":
+                raise Exception("Null geometries do not have bbox")
+            elif self.type == "Point":
                 x,y = self._data["coordinates"]
                 return [x,y,x,y]
             elif self.type in ("MultiPoint","LineString"):
@@ -233,6 +238,10 @@ class Geometry:
     @property
     def coordinates(self):
         return self._data["coordinates"]
+
+    @coordinates.setter
+    def coordinates(self, value):
+        self._data["coordinates"] = value
 
     # Methods
 
@@ -263,8 +272,11 @@ class Geometry:
         - An Exception if not valid. 
         """
 
-        # validate has type and coordinates keys
-        if "type" not in self._data or "coordinates" not in self._data:
+        # validate nullgeometry or has type and coordinates keys
+        if not self._data:
+            # null geometry, no further checking needed
+            return True
+        elif "type" not in self._data or "coordinates" not in self._data:
             raise Exception("A geometry dictionary or instance must have the type and coordinates entries")
         
         # first validate geometry type
@@ -343,7 +355,7 @@ class Feature(object):
             # comes straight from geojfile _iter_, so must use original dict
             # Note: user should not specify directly as dict, since won't validate, any better way?
             self._data = obj
-        elif geometry:
+        else:
             # from scratch from geometry/properties
             self._data = {"type":"Feature",
                           "geometry":Geometry(geometry).__geo_interface__,
@@ -356,7 +368,7 @@ class Feature(object):
     def __geo_interface__(self):
         geojdict = {"type":"Feature",
                     "geometry":self.geometry.__geo_interface__,
-                    "properties":self.properties.copy() }
+                    "properties":self.properties.copy() if self.properties else None }
         return geojdict
 
     @property
@@ -374,9 +386,7 @@ class Feature(object):
 
     @geometry.setter
     def geometry(self, value):
-        if isinstance(value, Geometry):
-            value = value.__geo_interface__
-        self._data["geometry"].update(**value)
+        self._data["geometry"] = Geometry(value).__geo_interface__
 
     def validate(self, fixerrors=True):
         """
@@ -552,7 +562,7 @@ class GeojsonFile:
             feat = obj._data
         elif isinstance(obj, dict):
             feat = obj.copy()
-        elif geometry:
+        else:
             feat = Feature(geometry=geometry, properties=properties).__geo_interface__
         self._data["features"].append(feat)
 
@@ -648,7 +658,7 @@ class GeojsonFile:
         automatically updates the bbox.
         """
 
-        xmins, ymins, xmaxs, ymaxs = zip(*(feat.geometry.bbox for feat in self))
+        xmins, ymins, xmaxs, ymaxs = zip(*(feat.geometry.bbox for feat in self if feat.geometry.type != "Null"))
         bbox = [min(xmins), min(ymins), max(xmaxs), max(ymaxs)] 
         self._data["bbox"] = bbox
 
@@ -673,8 +683,9 @@ class GeojsonFile:
         """
         Calculates and adds a bbox attribute to the geojson entry of all feature geometries, updating any existing ones.
         """
-        for feature in self._data["features"]:
-            feature["geometry"]["bbox"] = Feature(feature).geometry.bbox
+        for feature in self:
+            if feature.geometry.type != "Null":
+                feature.geometry._data["bbox"] = Feature(feature).geometry.bbox
 
     def save(self, savepath, **kwargs):
         """
