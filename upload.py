@@ -1,14 +1,17 @@
-import pypi
+import pipy
  
 packpath = "pygeoj.py"
-pypi.define_upload(packpath,
+pipy.define_upload(packpath,
                    author="Karim Bahgat",
                    author_email="karim.bahgat.norway@gmail.com",
                    license="MIT",
                    name="PyGeoj",
-                   changes=["Fixed bug with add_all_bboxes() not updating existing bboxes",
-                            "Fixed bug with GeojsonFile bbox sometimes being calculated wrong.",
-                            "Added update_bbox() on individual Geometry objects."],
+                   changes=["Fixed more robust validation to avoid unexpected errors",
+                            "Added skiperror option",
+                            "Fixed feat type missing when add_feature()",
+                            "Fixed crs not saving",
+                            "Added fixerror option when loading and validating",
+                            "Fix bug to allow null geometries and empty properties, and correctly represent them in json as null"],
                    description="A simple Python GeoJSON file reader and writer.",
                    url="http://github.com/karimbahgat/PyGeoj",
                    keywords="GIS spatial file format GeoJSON",
@@ -21,7 +24,7 @@ pypi.define_upload(packpath,
                                 "Topic :: Scientific/Engineering :: GIS"],
                    )
 
-pypi.generate_docs(packpath)
-#pypi.upload_test(packpath)
-pypi.upload(packpath)
+pipy.generate_docs(packpath)
+#pipy.upload_test(packpath)
+pipy.upload(packpath)
 

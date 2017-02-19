@@ -1,6 +1,15 @@
 
 ## Changes
 
+### 0.2.5 (2017-02-19)
+
+- Fixed more robust validation to avoid unexpected errors
+- Added skiperror option
+- Fixed feat type missing when add_feature()
+- Fixed crs not saving
+- Added fixerror option when loading and validating
+- Fix bug to allow null geometries and empty properties, and correctly represent them in json as null
+
 ### 0.2.4 (2015-07-11)
 
 - Fixed bug with add_all_bboxes() not updating existing bboxes
