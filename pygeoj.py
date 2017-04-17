@@ -709,7 +709,8 @@ class GeojsonFile:
         
         Note: to load with a different text encoding use the encoding argument.
         """
-        data = json.load(open(filepath), **kwargs)
+        with open(filepath, "r") as f:
+            data = json.load(f, **kwargs)
         return data
 
     def _prepdata(self):
