@@ -103,9 +103,9 @@ Creating a new geojson file from scratch is also easy:
 The new file can then be populated with new features:
 
     newfile.add_feature(properties={"country":"Norway"},
-                        geometry={type="Polygon", coordinates=[[(21,3),(33,11),(44,22)]]} )
+                        geometry={"type":"Polygon", "coordinates":[[(21,3),(33,11),(44,22)]]} )
     newfile.add_feature(properties={"country":"USA"},
-                        geometry={type="Polygon", coordinates=[[(11,23),(14,5),(66,31)]]} )
+                        geometry={"type":"Polygon", "coordinates":[[(11,23),(14,5),(66,31)]]} )
 
 Finally, some useful additional information can be added to top off the geojson file before saving it to
 file:
