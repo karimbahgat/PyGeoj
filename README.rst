@@ -9,7 +9,7 @@ details of the format specification.
 Platforms
 ---------
 
-So far only tested on Python version 2.x.
+Python 2 and 3.
 
 Dependencies
 ------------
@@ -162,10 +162,17 @@ license, see license.txt
 Credits:
 --------
 
-Karim Bahgat (2015)
+-  Karim Bahgat
+-  Mec-iS
 
 Changes
 -------
+
+1.0.0 (2018-09-13)
+~~~~~~~~~~~~~~~~~~
+
+-  Bump to stable version
+-  Officially support Python 3
 
 0.2.5 (2017-02-19)
 ~~~~~~~~~~~~~~~~~~

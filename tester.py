@@ -11,7 +11,7 @@ for feat in testfile:
     feat.geometry.coordinates = (99,99)
     #feat.properties = dict(new="shit")
     #feat.geometry = gj.Geometry(type="Point", coordinates=(7777,7777))
-    print "hmm", feat.geometry, feat.properties, feat.__geo_interface__
+    print("hmm", feat.geometry, feat.properties, feat.__geo_interface__)
 
 for feat in testfile:
-    print feat, feat.geometry, feat.properties, feat.__geo_interface__, feat.validate()
+    print(feat, feat.geometry, feat.properties, feat.__geo_interface__, feat.validate())

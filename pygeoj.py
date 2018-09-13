@@ -8,7 +8,7 @@ so the user does not have to get caught up in the details of the format specific
 
 ## Platforms
 
-So far only tested on Python version 2.x. 
+Python 2 and 3. 
 
 
 ## Dependencies
@@ -130,11 +130,12 @@ and modify according to the MIT license, see license.txt
 
 ## Credits:
 
-Karim Bahgat (2015)
+- Karim Bahgat
+- Mec-iS
 
 """
 
-__version__ = "0.2.5"
+__version__ = "1.0.0"
 
 try:
     import simplejson as json
