@@ -1,0 +1,1605 @@
+<!doctype html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+
+    <title>pygeoj API documentation</title>
+    <meta name="description" content="# **API Documentation**" />
+
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,300' rel='stylesheet' type='text/css'>
+  
+  <style type="text/css">
+  
+* {
+  box-sizing: border-box;
+}
+/*! normalize.css v1.1.1 | MIT License | git.io/normalize */
+
+/* ==========================================================================
+   HTML5 display definitions
+   ========================================================================== */
+
+/**
+ * Correct `block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+main,
+nav,
+section,
+summary {
+    display: block;
+}
+
+/**
+ * Correct `inline-block` display not defined in IE 6/7/8/9 and Firefox 3.
+ */
+
+audio,
+canvas,
+video {
+    display: inline-block;
+    *display: inline;
+    *zoom: 1;
+}
+
+/**
+ * Prevent modern browsers from displaying `audio` without controls.
+ * Remove excess height in iOS 5 devices.
+ */
+
+audio:not([controls]) {
+    display: none;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Firefox 3, and Safari 4.
+ * Known issue: no IE 6 support.
+ */
+
+[hidden] {
+    display: none;
+}
+
+/* ==========================================================================
+   Base
+   ========================================================================== */
+
+/**
+ * 1. Prevent system color scheme's background color being used in Firefox, IE,
+ *    and Opera.
+ * 2. Prevent system color scheme's text color being used in Firefox, IE, and
+ *    Opera.
+ * 3. Correct text resizing oddly in IE 6/7 when body `font-size` is set using
+ *    `em` units.
+ * 4. Prevent iOS text size adjust after orientation change, without disabling
+ *    user zoom.
+ */
+
+html {
+    background: #fff; /* 1 */
+    color: #000; /* 2 */
+    font-size: 100%; /* 3 */
+    -webkit-text-size-adjust: 100%; /* 4 */
+    -ms-text-size-adjust: 100%; /* 4 */
+}
+
+/**
+ * Address `font-family` inconsistency between `textarea` and other form
+ * elements.
+ */
+
+html,
+button,
+input,
+select,
+textarea {
+    font-family: sans-serif;
+}
+
+/**
+ * Address margins handled incorrectly in IE 6/7.
+ */
+
+body {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Links
+   ========================================================================== */
+
+/**
+ * Address `outline` inconsistency between Chrome and other browsers.
+ */
+
+a:focus {
+    outline: thin dotted;
+}
+
+/**
+ * Improve readability when focused and also mouse hovered in all browsers.
+ */
+
+a:active,
+a:hover {
+    outline: 0;
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+/**
+ * Address font sizes and margins set differently in IE 6/7.
+ * Address font sizes within `section` and `article` in Firefox 4+, Safari 5,
+ * and Chrome.
+ */
+
+h1 {
+    font-size: 2em;
+    margin: 0.67em 0;
+}
+
+h2 {
+    font-size: 1.5em;
+    margin: 0.83em 0;
+}
+
+h3 {
+    font-size: 1.17em;
+    margin: 1em 0;
+}
+
+h4 {
+    font-size: 1em;
+    margin: 1.33em 0;
+}
+
+h5 {
+    font-size: 0.83em;
+    margin: 1.67em 0;
+}
+
+h6 {
+    font-size: 0.67em;
+    margin: 2.33em 0;
+}
+
+/**
+ * Address styling not present in IE 7/8/9, Safari 5, and Chrome.
+ */
+
+abbr[title] {
+    border-bottom: 1px dotted;
+}
+
+/**
+ * Address style set to `bolder` in Firefox 3+, Safari 4/5, and Chrome.
+ */
+
+b,
+strong {
+    font-weight: bold;
+}
+
+blockquote {
+    margin: 1em 40px;
+}
+
+/**
+ * Address styling not present in Safari 5 and Chrome.
+ */
+
+dfn {
+    font-style: italic;
+}
+
+/**
+ * Address differences between Firefox and other browsers.
+ * Known issue: no IE 6/7 normalization.
+ */
+
+hr {
+    -moz-box-sizing: content-box;
+    box-sizing: content-box;
+    height: 0;
+}
+
+/**
+ * Address styling not present in IE 6/7/8/9.
+ */
+
+mark {
+    background: #ff0;
+    color: #000;
+}
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+p,
+pre {
+    margin: 1em 0;
+}
+
+/**
+ * Correct font family set oddly in IE 6, Safari 4/5, and Chrome.
+ */
+
+code,
+kbd,
+pre,
+samp {
+    font-family: monospace, serif;
+    _font-family: 'courier new', monospace;
+    font-size: 1em;
+}
+
+/**
+ * Improve readability of pre-formatted text in all browsers.
+ */
+
+pre {
+    white-space: pre;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/**
+ * Address CSS quotes not supported in IE 6/7.
+ */
+
+q {
+    quotes: none;
+}
+
+/**
+ * Address `quotes` property not supported in Safari 4.
+ */
+
+q:before,
+q:after {
+    content: '';
+    content: none;
+}
+
+/**
+ * Address inconsistent and variable font size in all browsers.
+ */
+
+small {
+    font-size: 80%;
+}
+
+/**
+ * Prevent `sub` and `sup` affecting `line-height` in all browsers.
+ */
+
+sub,
+sup {
+    font-size: 75%;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+}
+
+sup {
+    top: -0.5em;
+}
+
+sub {
+    bottom: -0.25em;
+}
+
+/* ==========================================================================
+   Lists
+   ========================================================================== */
+
+/**
+ * Address margins set differently in IE 6/7.
+ */
+
+dl,
+menu,
+ol,
+ul {
+    margin: 1em 0;
+}
+
+dd {
+    margin: 0 0 0 40px;
+}
+
+/**
+ * Address paddings set differently in IE 6/7.
+ */
+
+menu,
+ol,
+ul {
+    padding: 0 0 0 40px;
+}
+
+/**
+ * Correct list images handled incorrectly in IE 7.
+ */
+
+nav ul,
+nav ol {
+    list-style: none;
+    list-style-image: none;
+}
+
+/* ==========================================================================
+   Embedded content
+   ========================================================================== */
+
+/**
+ * 1. Remove border when inside `a` element in IE 6/7/8/9 and Firefox 3.
+ * 2. Improve image quality when scaled in IE 7.
+ */
+
+img {
+    border: 0; /* 1 */
+    -ms-interpolation-mode: bicubic; /* 2 */
+}
+
+/**
+ * Correct overflow displayed oddly in IE 9.
+ */
+
+svg:not(:root) {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   Figures
+   ========================================================================== */
+
+/**
+ * Address margin not present in IE 6/7/8/9, Safari 5, and Opera 11.
+ */
+
+figure {
+    margin: 0;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+/**
+ * Correct margin displayed oddly in IE 6/7.
+ */
+
+form {
+    margin: 0;
+}
+
+/**
+ * Define consistent border, margin, and padding.
+ */
+
+fieldset {
+    border: 1px solid #c0c0c0;
+    margin: 0 2px;
+    padding: 0.35em 0.625em 0.75em;
+}
+
+/**
+ * 1. Correct color not being inherited in IE 6/7/8/9.
+ * 2. Correct text not wrapping in Firefox 3.
+ * 3. Correct alignment displayed oddly in IE 6/7.
+ */
+
+legend {
+    border: 0; /* 1 */
+    padding: 0;
+    white-space: normal; /* 2 */
+    *margin-left: -7px; /* 3 */
+}
+
+/**
+ * 1. Correct font size not being inherited in all browsers.
+ * 2. Address margins set differently in IE 6/7, Firefox 3+, Safari 5,
+ *    and Chrome.
+ * 3. Improve appearance and consistency in all browsers.
+ */
+
+button,
+input,
+select,
+textarea {
+    font-size: 100%; /* 1 */
+    margin: 0; /* 2 */
+    vertical-align: baseline; /* 3 */
+    *vertical-align: middle; /* 3 */
+}
+
+/**
+ * Address Firefox 3+ setting `line-height` on `input` using `!important` in
+ * the UA stylesheet.
+ */
+
+button,
+input {
+    line-height: normal;
+}
+
+/**
+ * Address inconsistent `text-transform` inheritance for `button` and `select`.
+ * All other form control elements do not inherit `text-transform` values.
+ * Correct `button` style inheritance in Chrome, Safari 5+, and IE 6+.
+ * Correct `select` style inheritance in Firefox 4+ and Opera.
+ */
+
+button,
+select {
+    text-transform: none;
+}
+
+/**
+ * 1. Avoid the WebKit bug in Android 4.0.* where (2) destroys native `audio`
+ *    and `video` controls.
+ * 2. Correct inability to style clickable `input` types in iOS.
+ * 3. Improve usability and consistency of cursor style between image-type
+ *    `input` and others.
+ * 4. Remove inner spacing in IE 7 without affecting normal text inputs.
+ *    Known issue: inner spacing remains in IE 6.
+ */
+
+button,
+html input[type="button"], /* 1 */
+input[type="reset"],
+input[type="submit"] {
+    -webkit-appearance: button; /* 2 */
+    cursor: pointer; /* 3 */
+    *overflow: visible;  /* 4 */
+}
+
+/**
+ * Re-set default cursor for disabled elements.
+ */
+
+button[disabled],
+html input[disabled] {
+    cursor: default;
+}
+
+/**
+ * 1. Address box sizing set to content-box in IE 8/9.
+ * 2. Remove excess padding in IE 8/9.
+ * 3. Remove excess padding in IE 7.
+ *    Known issue: excess padding remains in IE 6.
+ */
+
+input[type="checkbox"],
+input[type="radio"] {
+    box-sizing: border-box; /* 1 */
+    padding: 0; /* 2 */
+    *height: 13px; /* 3 */
+    *width: 13px; /* 3 */
+}
+
+/**
+ * 1. Address `appearance` set to `searchfield` in Safari 5 and Chrome.
+ * 2. Address `box-sizing` set to `border-box` in Safari 5 and Chrome
+ *    (include `-moz` to future-proof).
+ */
+
+input[type="search"] {
+    -webkit-appearance: textfield; /* 1 */
+    -moz-box-sizing: content-box;
+    -webkit-box-sizing: content-box; /* 2 */
+    box-sizing: content-box;
+}
+
+/**
+ * Remove inner padding and search cancel button in Safari 5 and Chrome
+ * on OS X.
+ */
+
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+    -webkit-appearance: none;
+}
+
+/**
+ * Remove inner padding and border in Firefox 3+.
+ */
+
+button::-moz-focus-inner,
+input::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+}
+
+/**
+ * 1. Remove default vertical scrollbar in IE 6/7/8/9.
+ * 2. Improve readability and alignment in all browsers.
+ */
+
+textarea {
+    overflow: auto; /* 1 */
+    vertical-align: top; /* 2 */
+}
+
+/* ==========================================================================
+   Tables
+   ========================================================================== */
+
+/**
+ * Remove most spacing between table cells.
+ */
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+  </style>
+
+  <style type="text/css">
+  
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+  }
+  body {
+    background: #fff;
+    font-family: "Source Sans Pro", "Helvetica Neueue", Helvetica, sans;
+    font-weight: 300;
+    font-size: 16px;
+    line-height: 1.6em;
+  }
+  #content {
+    width: 70%;
+    max-width: 850px;
+    float: left;
+    padding: 30px 60px;
+    border-left: 1px solid #ddd;
+  }
+  #sidebar {
+    width: 25%;
+    float: left;
+    padding: 30px;
+    overflow: hidden;
+  }
+  #nav {
+    font-size: 130%;
+    margin: 0 0 15px 0;
+  }
+
+  #top {
+    display: block;
+    position: fixed;
+    bottom: 5px;
+    left: 5px;
+    font-size: .85em;
+    text-transform: uppercase;
+  }
+
+  #footer {
+    font-size: .75em;
+    padding: 5px 30px;
+    border-top: 1px solid #ddd;
+    text-align: right;
+  }
+    #footer p {
+      margin: 0 0 0 30px;
+      display: inline-block;
+    }
+
+  h1, h2, h3, h4, h5 {
+    font-weight: 300;
+  }
+  h1 {
+    font-size: 2.5em;
+    line-height: 1.1em;
+    margin: 0 0 .50em 0;
+  }
+
+  h2 {
+    font-size: 1.75em;
+    margin: 1em 0 .50em 0;
+  }
+
+  h3 {
+    margin: 25px 0 10px 0;
+  }
+
+  h4 {
+    margin: 0;
+    font-size: 105%;
+  }
+
+  a {
+    color: #058;
+    text-decoration: none;
+    transition: color .3s ease-in-out;
+  }
+
+  a:hover {
+    color: #e08524;
+    transition: color .3s ease-in-out;
+  }
+
+  pre, code, .mono, .name {
+    font-family: "Ubuntu Mono", "Cousine", "DejaVu Sans Mono", monospace;
+  }
+
+  .title .name {
+    font-weight: bold;
+  }
+  .section-title {
+    margin-top: 2em;
+  }
+  .ident {
+    color: #900;
+  }
+
+  code {
+    background: #f9f9f9;
+  } 
+
+  pre {
+    background: #fefefe;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 0 #f3f3f3;
+    margin: 0 30px;
+    padding: 15px 30px;
+  }
+
+  .codehilite {
+    margin: 0 30px 10px 30px;
+  }
+
+    .codehilite pre {
+      margin: 0;
+    }
+    .codehilite .err { background: #ff3300; color: #fff !important; } 
+
+  table#module-list {
+    font-size: 110%;
+  }
+
+    table#module-list tr td:first-child {
+      padding-right: 10px;
+      white-space: nowrap;
+    }
+
+    table#module-list td {
+      vertical-align: top;
+      padding-bottom: 8px;
+    }
+
+      table#module-list td p {
+        margin: 0 0 7px 0;
+      }
+
+  .def {
+    display: table;
+  }
+
+    .def p {
+      display: table-cell;
+      vertical-align: top;
+      text-align: left;
+    }
+
+    .def p:first-child {
+      white-space: nowrap;
+    }
+
+    .def p:last-child {
+      width: 100%;
+    }
+
+
+  #index {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+    ul#index .class_name {
+      /* font-size: 110%; */
+      font-weight: bold;
+    }
+    #index ul {
+      margin: 0;
+    }
+
+  .item {
+    margin: 0 0 15px 0;
+  }
+
+    .item .class {
+      margin: 0 0 25px 30px;
+    }
+
+      .item .class ul.class_list {
+        margin: 0 0 20px 0;
+      }
+
+    .item .name {
+      background: #fafafa;
+      margin: 0;
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 3px;
+      display: inline-block;
+      min-width: 40%;
+    }
+      .item .name:hover {
+        background: #f6f6f6;
+      }
+
+    .item .empty_desc {
+      margin: 0 0 5px 0;
+      padding: 0;
+    }
+
+    .item .inheritance {
+      margin: 3px 0 0 30px;
+    }
+
+    .item .inherited {
+      color: #666;
+    }
+
+    .item .desc {
+      padding: 0 8px;
+      margin: 0;
+    }
+
+      .item .desc p {
+        margin: 0 0 10px 0;
+      }
+
+    .source_cont {
+      margin: 0;
+      padding: 0;
+    }
+
+    .source_link a {
+      background: #ffc300;
+      font-weight: 400;
+      font-size: .75em;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow: 1px 1px 0 #f4b700;
+      
+      padding: 3px 8px;
+      border-radius: 2px;
+      transition: background .3s ease-in-out;
+    }
+      .source_link a:hover {
+        background: #FF7200;
+        text-shadow: none;
+        transition: background .3s ease-in-out;
+      }
+
+    .source {
+      display: none;
+      max-height: 600px;
+      overflow-y: scroll;
+      margin-bottom: 15px;
+    }
+
+      .source .codehilite {
+        margin: 0;
+      }
+
+  .desc h1, .desc h2, .desc h3 {
+    font-size: 100% !important;
+  }
+  .clear {
+    clear: both;
+  }
+
+  @media all and (max-width: 950px) {
+    #sidebar {
+      width: 35%;
+    }
+    #content {
+      width: 65%;
+    }
+  }
+  @media all and (max-width: 650px) {
+    #top {
+      display: none;
+    }
+    #sidebar {
+      float: none;
+      width: auto;
+    }
+    #content {
+      float: none;
+      width: auto;
+      padding: 30px;
+    }
+
+    #index ul {
+      padding: 0;
+      margin-bottom: 15px;
+    }
+    #index ul li {
+      display: inline-block;
+      margin-right: 30px;
+    }
+    #footer {
+      text-align: left;
+    }
+    #footer p {
+      display: block;
+      margin: inherit;
+    }
+  }
+
+  /*****************************/
+
+  </style>
+
+
+  <style type="text/css">
+  
+/* ==========================================================================
+   EXAMPLE Media Queries for Responsive Design.
+   These examples override the primary ('mobile first') styles.
+   Modify as content requires.
+   ========================================================================== */
+
+@media only screen and (min-width: 35em) {
+    /* Style adjustments for viewports that meet the condition */
+}
+
+@media print,
+       (-o-min-device-pixel-ratio: 5/4),
+       (-webkit-min-device-pixel-ratio: 1.25),
+       (min-resolution: 120dpi) {
+    /* Style adjustments for high resolution devices */
+}
+
+/* ==========================================================================
+   Print styles.
+   Inlined to avoid required HTTP connection: h5bp.com/r
+   ========================================================================== */
+
+@media print {
+    * {
+        background: transparent !important;
+        color: #000 !important; /* Black prints faster: h5bp.com/s */
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+
+    a,
+    a:visited {
+        text-decoration: underline;
+    }
+
+    a[href]:after {
+        content: " (" attr(href) ")";
+    }
+
+    abbr[title]:after {
+        content: " (" attr(title) ")";
+    }
+
+    /*
+     * Don't show links for images, or javascript/internal links
+     */
+
+    .ir a:after,
+    a[href^="javascript:"]:after,
+    a[href^="#"]:after {
+        content: "";
+    }
+
+    pre,
+    blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+    }
+
+    thead {
+        display: table-header-group; /* h5bp.com/t */
+    }
+
+    tr,
+    img {
+        page-break-inside: avoid;
+    }
+
+    img {
+        max-width: 100% !important;
+    }
+
+    @page {
+        margin: 0.5cm;
+    }
+
+    p,
+    h2,
+    h3 {
+        orphans: 3;
+        widows: 3;
+    }
+
+    h2,
+    h3 {
+        page-break-after: avoid;
+    }
+}
+
+  </style>
+
+  <script type="text/javascript">
+  function toggle(id, $link) {
+    $node = document.getElementById(id);
+    if (!$node)
+    return;
+    if (!$node.style.display || $node.style.display == 'none') {
+    $node.style.display = 'block';
+    $link.innerHTML = 'Hide source &nequiv;';
+    } else {
+    $node.style.display = 'none';
+    $link.innerHTML = 'Show source &equiv;';
+    }
+  }
+  </script>
+</head>
+<body>
+<a href="#" id="top">Top</a>
+
+<div id="container">
+    
+  
+  <div id="sidebar">
+    <h1>Index</h1>
+    <ul id="index">
+
+    <li class="set"><h3><a href="#header-functions">Functions</a></h3>
+      
+  <ul>
+    <li class="mono"><a href="#pygeoj.load">load</a></li>
+    <li class="mono"><a href="#pygeoj.new">new</a></li>
+    <li class="mono"><a href="#pygeoj.validate">validate</a></li>
+  </ul>
+
+    </li>
+
+    <li class="set"><h3><a href="#header-classes">Classes</a></h3>
+      <ul>
+        <li class="mono">
+        <span class="class_name"><a href="#pygeoj.Feature">Feature</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#pygeoj.Feature.__init__">__init__</a></li>
+    <li class="mono"><a href="#pygeoj.Feature.validate">validate</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#pygeoj.GeojsonFile">GeojsonFile</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.__init__">__init__</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.add_all_bboxes">add_all_bboxes</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.add_feature">add_feature</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.add_unique_id">add_unique_id</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.addfeature">addfeature</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.define_crs">define_crs</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.get_feature">get_feature</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.getfeature">getfeature</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.remove_feature">remove_feature</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.removefeature">removefeature</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.replace_feature">replace_feature</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.replacefeature">replacefeature</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.save">save</a></li>
+    <li class="mono"><a href="#pygeoj.GeojsonFile.update_bbox">update_bbox</a></li>
+  </ul>
+
+        </li>
+        <li class="mono">
+        <span class="class_name"><a href="#pygeoj.Geometry">Geometry</a></span>
+        
+          
+  <ul>
+    <li class="mono"><a href="#pygeoj.Geometry.__init__">__init__</a></li>
+    <li class="mono"><a href="#pygeoj.Geometry.update_bbox">update_bbox</a></li>
+    <li class="mono"><a href="#pygeoj.Geometry.validate">validate</a></li>
+  </ul>
+
+        </li>
+      </ul>
+    </li>
+
+    </ul>
+  </div>
+
+    <article id="content">
+      
+  
+
+  
+
+
+  <header id="section-intro">
+  <h1 class="title"><span class="name">pygeoj</span> module</h1>
+  <h1><strong>API Documentation</strong></h1>
+  
+
+  </header>
+
+  <section id="section-items">
+
+    <h2 class="section-title" id="header-functions">Functions</h2>
+      
+  <div class="item">
+    <div class="name def" id="pygeoj.load">
+    <p>def <span class="ident">load</span>(</p><p>filepath=None, data=None, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Loads a geojson file or dictionary, validates it, and returns a
+GeojsonFile instance.</p>
+<p>In order for a geojson dict to be considered a file,
+it cannot just be single geometries, so this class always
+saves them as the toplevel FeatureCollection type,
+and requires the files it loads to be the same.</p>
+<p>To load with a different text encoding use the 'encoding' argument.</p>
+<p>Parameters:</p>
+<ul>
+<li><strong>filepath</strong> (optional): The path of a geojson file to load.</li>
+<li><strong>data</strong> (optional): A complete geojson dictionary to load.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li>A GeojsonFile instance.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="pygeoj.new">
+    <p>def <span class="ident">new</span>(</p><p>)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Creates a new empty geojson file instance.</p>
+<p>Returns:</p>
+<ul>
+<li>An empty GeojsonFile instance.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+      
+  <div class="item">
+    <div class="name def" id="pygeoj.validate">
+    <p>def <span class="ident">validate</span>(</p><p>data, skiperrors=False, fixerrors=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Checks that the geojson data is a feature collection, that it
+contains a proper "features" attribute, and that all features are valid too.
+Returns True if all goes well.</p>
+<ul>
+<li>skiperrors will throw away any features that fail to validate.</li>
+<li>fixerrors will attempt to auto fix any minor errors without raising exceptions.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+
+    <h2 class="section-title" id="header-classes">Classes</h2>
+      
+      <div class="item">
+      <p id="pygeoj.Feature" class="name">class <span class="ident">Feature</span></p>
+      
+  
+    <div class="desc"><p>A feature instance, as an object representation of GeoJSON's feature dictinoary item,
+with some convenience methods. </p>
+<p>Attributes:</p>
+<ul>
+<li><strong>geometry</strong>: A Geometry instance.</li>
+<li><strong>properties</strong>: A properties dictionary</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#pygeoj.Feature">Feature</a></li>
+          <li>__builtin__.object</li>
+          </ul>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.Feature.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, obj=None, geometry=None, properties=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>If obj isn't specified, geometry and properties can be set as arguments directly.</p>
+<p>Parameters:</p>
+<ul>
+<li><strong>obj</strong>: Another feature instance, an object with the __geo_interface__ or a geojson dictionary of the Feature type.</li>
+<li><strong>geometry</strong> (optional): Anything that the Geometry instance can accept.</li>
+<li><strong>properties</strong> (optional): A dictionary of key-value property pairs.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.Feature.validate">
+    <p>def <span class="ident">validate</span>(</p><p>self, fixerrors=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Validates that the feature is correctly formatted.</p>
+<p>Parameters:</p>
+<ul>
+<li><strong>fixerrors</strong> (optional): Attempts to fix minor errors without raising exceptions (defaults to True)</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li>True if the feature is valid.</li>
+</ul>
+<p>Raises:</p>
+<ul>
+<li>An Exception if not valid.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="pygeoj.GeojsonFile" class="name">class <span class="ident">GeojsonFile</span></p>
+      
+  
+    <div class="desc"><p>An instance of a geojson file. </p>
+<p>Attributes:</p>
+<ul>
+<li><strong>crs</strong>: The geojson formatted dictionary of the file's coordinate reference system. Read only. Call .define_crs() to change it. </li>
+<li><strong>bbox</strong>: The bounding box surrounding all geometries in the file. Read only. You may need to call .update_bbox() to make sure this one is up-to-date.</li>
+<li><strong>all_attributes</strong>: Collect and return a list of all attributes/properties/fields used in any of the features. Read only. </li>
+<li><strong>common_attributes</strong>: Collects and returns a list of attributes/properties/fields common to all features. Read only.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#pygeoj.GeojsonFile">GeojsonFile</a></li>
+          </ul>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, filepath=None, data=None, skiperrors=False, fixerrors=True, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Can load from data or from a file,
+which can then be read or edited.
+Call without any arguments to create an empty geojson file
+so you can construct it from scratch.</p>
+<p>In order for a geojson dict to be considered a file,
+it cannot just be single geometries, so this class always
+saves them as the toplevel FeatureCollection type,
+and requires the files it loads to be the same.</p>
+<p>Parameters:</p>
+<ul>
+<li><strong>filepath</strong> (optional): The path of a geojson file to load.</li>
+<li><strong>data</strong> (optional): A complete geojson dictionary to load.</li>
+<li><strong>skiperrors</strong> (optional): Throws away any features that fail to validate (defaults to False).</li>
+<li><strong>fixerrors</strong> (optional): Attempts to auto fix any minor errors without raising exceptions (defaults to True).</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.add_all_bboxes">
+    <p>def <span class="ident">add_all_bboxes</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Calculates and adds a bbox attribute to the geojson entry of all feature geometries, updating any existing ones.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.add_feature">
+    <p>def <span class="ident">add_feature</span>(</p><p>self, obj=None, geometry=None, properties=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Adds a given feature. If obj isn't specified, geometry and properties can be set as arguments directly.</p>
+<p>Parameters:</p>
+<ul>
+<li><strong>obj</strong>: Another feature instance, an object with the __geo_interface__ or a geojson dictionary of the Feature type.</li>
+<li><strong>geometry</strong> (optional): Anything that the Geometry instance can accept.</li>
+<li><strong>properties</strong> (optional): A dictionary of key-value property pairs.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.add_unique_id">
+    <p>def <span class="ident">add_unique_id</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Adds a unique id property to each feature.</p>
+<p>Raises:</p>
+<ul>
+<li>An Exception if any of the features already
+    have an "id" field.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.addfeature">
+    <p>def <span class="ident">addfeature</span>(</p><p>self, feature)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Backwards compatible legacy method. WARNING: Will be depreceated.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.define_crs">
+    <p>def <span class="ident">define_crs</span>(</p><p>self, type, name=None, link=None, link_type=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Defines the coordinate reference system for the geojson file.
+For link crs, only online urls are currenlty supported
+(no auxilliary crs files).</p>
+<p>Parameters:</p>
+<ul>
+<li><strong>type</strong>: The type of crs, either "name" or "link".</li>
+<li><strong>name</strong> (optional): The crs name as an OGC formatted crs string (eg "urn:ogc:def:crs:..."), required if type is "name"</li>
+<li><strong>link</strong>: The crs online url link address, required if type is "link".</li>
+<li><strong>link_type</strong>: The type of crs link, optional if type is "link".</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.get_feature">
+    <p>def <span class="ident">get_feature</span>(</p><p>self, index)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Gets a feature based on its index. Same as feat[index]. </p>
+<p>Parameters:</p>
+<ul>
+<li><strong>index</strong>: The index position of the feature to get.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li>A Feature instance.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.getfeature">
+    <p>def <span class="ident">getfeature</span>(</p><p>self, index)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Backwards compatible legacy method. WARNING: Will be depreceated.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.remove_feature">
+    <p>def <span class="ident">remove_feature</span>(</p><p>oldindex)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Removes a feature at a specified index position. </p>
+<p>Parameters:</p>
+<ul>
+<li><strong>oldindex</strong>: The index position of the feature to be removed.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.removefeature">
+    <p>def <span class="ident">removefeature</span>(</p><p>oldindex)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Backwards compatible legacy method. WARNING: Will be depreceated.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.replace_feature">
+    <p>def <span class="ident">replace_feature</span>(</p><p>self, oldindex, newfeature)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Replaces the feature at an index position with another. </p>
+<p>Parameters:</p>
+<ul>
+<li><strong>oldindex</strong>: The index position of the feature to be replaced. </li>
+<li><strong>newfeature</strong>: Anything that the Feature instance can accept.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.replacefeature">
+    <p>def <span class="ident">replacefeature</span>(</p><p>self, oldindex, newfeature)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Backwards compatible legacy method. WARNING: Will be depreceated.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.save">
+    <p>def <span class="ident">save</span>(</p><p>self, savepath, **kwargs)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Saves the geojson instance to file. To save with a different text encoding use the 'encoding' argument.</p>
+<p>Parameters:</p>
+<ul>
+<li><strong>savepath</strong>: Filepath to save the file.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.GeojsonFile.update_bbox">
+    <p>def <span class="ident">update_bbox</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Recalculates the bbox region attribute for the entire file.
+Useful after adding and/or removing features.</p>
+<p>No need to use this method just for saving, because saving
+automatically updates the bbox.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+      
+      <div class="item">
+      <p id="pygeoj.Geometry" class="name">class <span class="ident">Geometry</span></p>
+      
+  
+    <div class="desc"><p>A geometry instance, as an object representation of GeoJSON's geometry dictinoary item,
+with some convenience methods. </p>
+<p>Attributes:</p>
+<ul>
+<li><strong>type</strong>: As specified when constructed</li>
+<li><strong>coordinates</strong>: As specified when constructed</li>
+<li><strong>bbox</strong>: If the bounding box wasn't specified when constructed then it is calculated on-the-fly.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+
+      <div class="class">
+          <h3>Ancestors (in MRO)</h3>
+          <ul class="class_list">
+          <li><a href="#pygeoj.Geometry">Geometry</a></li>
+          </ul>
+          <h3>Methods</h3>
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.Geometry.__init__">
+    <p>def <span class="ident">__init__</span>(</p><p>self, obj=None, type=None, coordinates=None, bbox=None)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Can be created from args, or without any to create an empty one from scratch.
+If obj isn't specified, type, coordinates, and optionally bbox can be set as arguments</p>
+<p>Parameters:</p>
+<ul>
+<li><strong>obj</strong>:
+    Another geometry instance, an object with the __geo_interface__ or a geojson dictionary of the Geometry type</li>
+<li><strong>type</strong> (optional):
+    The type of geometry. Point, MultiPoint, LineString, MultiLineString,
+    Polygon, or MultiPolygon. </li>
+<li><strong>coordinates</strong> (optional):
+    A sequence of coordinates formatted according to the geometry type. </li>
+<li><strong>bbox</strong> (optional):
+    The bounding box of the geometry as [xmin, ymin, xmax, ymax].</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.Geometry.update_bbox">
+    <p>def <span class="ident">update_bbox</span>(</p><p>self)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Removes any existing stored bbox attribute from the geojson dictionary.
+This way, until you set the bbox attribute again, the bbox will always
+be calculated on the fly and be up to date.
+Useful after making changes to the geometry coordinates.</p></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+            
+  <div class="item">
+    <div class="name def" id="pygeoj.Geometry.validate">
+    <p>def <span class="ident">validate</span>(</p><p>self, fixerrors=True)</p>
+    </div>
+    
+
+    
+  
+    <div class="desc"><p>Validates that the geometry is correctly formatted according to the geometry type. </p>
+<p>Parameters:</p>
+<ul>
+<li><strong>fixerrors</strong> (optional): Attempts to fix minor errors without raising exceptions (defaults to True)</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li>True if the geometry is valid.</li>
+</ul>
+<p>Raises:</p>
+<ul>
+<li>An Exception if not valid.</li>
+</ul></div>
+  <div class="source_cont">
+</div>
+
+  </div>
+  
+      </div>
+      </div>
+
+  </section>
+
+    </article>
+  <div class="clear"> </div>
+  <footer id="footer">
+    <p>
+      Documentation generated by
+      <a href="https://github.com/BurntSushi/pdoc">pdoc 0.3.2</a>
+    </p>
+
+    <p>pdoc is in the public domain with the
+      <a href="http://unlicense.org">UNLICENSE</a></p>
+
+    <p>Design by <a href="http://nadh.in">Kailash Nadh</a></p>
+  </footer>
+</div>
+</body>
+</html>

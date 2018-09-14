@@ -119,7 +119,7 @@ file:
 ## More Information:
 
 - [Home Page](http://github.com/karimbahgat/PyGeoj)
-- [API Documentation](http://pythonhosted.org/PyGeoj)
+- [API Documentation](https://karimbahgat.github.io/PyGeoj/)
 
 
 ## License:

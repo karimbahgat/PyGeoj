@@ -151,7 +151,7 @@ More Information:
 -----------------
 
 -  `Home Page <http://github.com/karimbahgat/PyGeoj>`__
--  `API Documentation <http://pythonhosted.org/PyGeoj>`__
+-  `API Documentation <https://karimbahgat.github.io/PyGeoj/>`__
 
 License:
 --------
@@ -168,7 +168,7 @@ Credits:
 Changes
 -------
 
-1.0.0 (2018-09-13)
+1.0.0 (2018-09-14)
 ~~~~~~~~~~~~~~~~~~
 
 -  Bump to stable version
