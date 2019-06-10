@@ -701,6 +701,15 @@ class GeojsonFile:
         tempfile = open(savepath,"w")
         json.dump(self._data, tempfile, **kwargs)
         tempfile.close()
+        
+    def dumps(self):
+        """
+        Dumps the geojson instance as a string.
+
+        """
+        
+        self.update_bbox()
+        return json.dumps(self._data)
 
     # Internal Methods
 
