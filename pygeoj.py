@@ -2,18 +2,18 @@
 # PyGeoj
 
 PyGeoj is a simple Python GeoJSON file reader and writer intended for end-users.
-It exposees dictionary structures as high level objects with convenience methods,
-so the user does not have to get caught up in the details of the format specification. 
+It exposes dictionary structures as high level objects with convenience methods,
+so the user does not have to get caught up in the details of the format specification.
 
 
 ## Platforms
 
-Python 2 and 3. 
+Python 2 and 3.
 
 
 ## Dependencies
 
-Pure Python, no dependencies. 
+Pure Python, no dependencies.
 
 
 ## Installing it
@@ -22,8 +22,8 @@ PyGeoj is installed with pip from the commandline:
 
     pip install pygeoj
 
-It also works to just place the "pygeoj" package folder in an importable location like 
-"PythonXX/Lib/site-packages". 
+It also works to just place the "pygeoj" package folder in an importable location like
+"PythonXX/Lib/site-packages".
 
 
 ## Example Usage
@@ -57,7 +57,7 @@ Individual features can be accessed by their index in the features list:
 
 Or by iterating through all of them:
 
-    for feature in testfile: 
+    for feature in testfile:
         # do something
 
 A feature can be inspected in various ways:
@@ -98,7 +98,7 @@ Creating a new geojson file from scratch is also easy:
     newfile = pygeoj.new()
 
     # The data coordinate system defaults to long/lat WGS84 or can be manually defined:
-    newfile.define_crs(type="link", link="http://spatialreference.org/ref/epsg/26912/esriwkt/", link_type="esriwkt")
+    newfile.define_crs(type="link", link="https://spatialreference.org/ref/epsg/26912/esriwkt.txt", link_type="esriwkt")
 
 The new file can then be populated with new features:
 
@@ -109,7 +109,7 @@ The new file can then be populated with new features:
 
 Finally, some useful additional information can be added to top off the geojson file before saving it to
 file:
- 
+
     newfile.add_all_bboxes()
     newfile.update_bbox()
     newfile.add_unique_id()
@@ -118,7 +118,7 @@ file:
 
 ## More Information:
 
-- [Home Page](http://github.com/karimbahgat/PyGeoj)
+- [Home Page](https://github.com/karimbahgat/PyGeoj)
 - [API Documentation](https://karimbahgat.github.io/PyGeoj/)
 
 
@@ -135,38 +135,39 @@ and modify according to the MIT license, see license.txt
 
 """
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 try:
     import simplejson as json
 except:
     import json
+from warnings import deprecated
 
 class Geometry:
     """
     A geometry instance, as an object representation of GeoJSON's geometry dictinoary item,
-    with some convenience methods. 
+    with some convenience methods.
 
     Attributes:
- 
+
     - **type**: As specified when constructed
     - **coordinates**: As specified when constructed
     - **bbox**: If the bounding box wasn't specified when constructed then it is calculated on-the-fly.
     """
     def __init__(self, obj=None, type=None, coordinates=None, bbox=None):
-        """
+        r"""
         Can be created from args, or without any to create an empty one from scratch.
         If obj isn't specified, type, coordinates, and optionally bbox can be set as arguments
 
         Parameters:
-        
+
         - **obj**:
             Another geometry instance, an object with the \_\_geo_interface__ or a geojson dictionary of the Geometry type
         - **type** (optional):
             The type of geometry. Point, MultiPoint, LineString, MultiLineString,
-            Polygon, or MultiPolygon. 
+            Polygon, or MultiPolygon.
         - **coordinates** (optional):
-            A sequence of coordinates formatted according to the geometry type. 
+            A sequence of coordinates formatted according to the geometry type.
         - **bbox** (optional):
             The bounding box of the geometry as [xmin, ymin, xmax, ymax].
         """
@@ -235,7 +236,7 @@ class Geometry:
                 if _y < _ymin: _ymin = _y
                 elif _y > _ymax: _ymax = _y
             return _xmin,_ymin,_xmax,_ymax
-    
+
     @property
     def coordinates(self):
         return self._data["coordinates"]
@@ -258,19 +259,19 @@ class Geometry:
 
     def validate(self, fixerrors=True):
         """
-        Validates that the geometry is correctly formatted according to the geometry type. 
+        Validates that the geometry is correctly formatted according to the geometry type.
 
         Parameters:
 
         - **fixerrors** (optional): Attempts to fix minor errors without raising exceptions (defaults to True)
 
         Returns:
-        
+
         - True if the geometry is valid.
 
         Raises:
 
-        - An Exception if not valid. 
+        - An Exception if not valid.
         """
 
         # validate nullgeometry or has type and coordinates keys
@@ -279,7 +280,7 @@ class Geometry:
             return True
         elif "type" not in self._data or "coordinates" not in self._data:
             raise Exception("A geometry dictionary or instance must have the type and coordinates entries")
-        
+
         # first validate geometry type
         if not self.type in ("Point","MultiPoint","LineString","MultiLineString","Polygon","MultiPolygon"):
             if fixerrors:
@@ -292,10 +293,10 @@ class Geometry:
                     newtype = "Polygon"
                 else:
                     raise Exception('Invalid geometry type. Must be one of: "Point","MultiPoint","LineString","MultiLineString","Polygon","MultiPolygon"')
-                
+
                 if self.type.lower().startswith("multi"):
                     newtype = "Multi" + newtype
-                    
+
                 self.type = newtype
             else:
                 raise Exception('Invalid geometry type. Must be one of: "Point","MultiPoint","LineString","MultiLineString","Polygon","MultiPolygon"')
@@ -324,11 +325,10 @@ class Geometry:
         return True
 
 
-
 class Feature(object):
     """
     A feature instance, as an object representation of GeoJSON's feature dictinoary item,
-    with some convenience methods. 
+    with some convenience methods.
 
     Attributes:
 
@@ -336,7 +336,7 @@ class Feature(object):
     - **properties**: A properties dictionary
     """
     def __init__(self, obj=None, geometry=None, properties=None):
-        """
+        r"""
         If obj isn't specified, geometry and properties can be set as arguments directly.
 
         Parameters:
@@ -346,7 +346,7 @@ class Feature(object):
         - **properties** (optional): A dictionary of key-value property pairs.
         """
         properties = properties or {}
-        
+
         if isinstance(obj, Feature):
             # from scrath as copy of another feat instance
             self._data = {"type":"Feature",
@@ -398,12 +398,12 @@ class Feature(object):
         - **fixerrors** (optional): Attempts to fix minor errors without raising exceptions (defaults to True)
 
         Returns:
-        
+
         - True if the feature is valid.
 
         Raises:
 
-        - An Exception if not valid. 
+        - An Exception if not valid.
         """
         if not "type" in self._data or self._data["type"] != "Feature":
             if fixerrors:
@@ -422,20 +422,20 @@ class Feature(object):
                 raise Exception("A geojson feature dictionary must contain a properties key and it must be a dictionary type.")
         self.geometry.validate(fixerrors)
         return True
-    
+
 
 class GeojsonFile:
     """
-    An instance of a geojson file. 
+    An instance of a geojson file.
 
     Attributes:
 
-    - **crs**: The geojson formatted dictionary of the file's coordinate reference system. Read only. Call .define_crs() to change it. 
+    - **crs**: The geojson formatted dictionary of the file's coordinate reference system. Read only. Call .define_crs() to change it.
     - **bbox**: The bounding box surrounding all geometries in the file. Read only. You may need to call .update_bbox() to make sure this one is up-to-date.
-    - **all_attributes**: Collect and return a list of all attributes/properties/fields used in any of the features. Read only. 
-    - **common_attributes**: Collects and returns a list of attributes/properties/fields common to all features. Read only. 
+    - **all_attributes**: Collect and return a list of all attributes/properties/fields used in any of the features. Read only.
+    - **common_attributes**: Collects and returns a list of attributes/properties/fields common to all features. Read only.
     """
-    
+
     def __init__(self, filepath=None, data=None, skiperrors=False, fixerrors=True, **kwargs):
         """
         Can load from data or from a file,
@@ -449,13 +449,13 @@ class GeojsonFile:
         and requires the files it loads to be the same.
 
         Parameters:
-        
+
         - **filepath** (optional): The path of a geojson file to load.
         - **data** (optional): A complete geojson dictionary to load.
         - **skiperrors** (optional): Throws away any features that fail to validate (defaults to False).
         - **fixerrors** (optional): Attempts to auto fix any minor errors without raising exceptions (defaults to True).
         """
-        
+
         if filepath:
             data = self._loadfilepath(filepath, **kwargs)
             if validate(data, skiperrors=skiperrors, fixerrors=fixerrors):
@@ -492,7 +492,7 @@ class GeojsonFile:
     def __delitem__(self, index):
         """Delete a feature based on its index, like del geojfile[7]"""
         del self._data["features"][index]
-        
+
     def __iter__(self):
         """Iterates through and yields each feature in the file."""
         for featuredict in self._data["features"]:
@@ -504,7 +504,7 @@ class GeojsonFile:
         return self._data
 
     # Attributes
-                         
+
     @property
     def crs(self):
         type = self._data["crs"]["type"]
@@ -548,7 +548,7 @@ class GeojsonFile:
     # Methods
 
     def add_feature(self, obj=None, geometry=None, properties=None):
-        """
+        r"""
         Adds a given feature. If obj isn't specified, geometry and properties can be set as arguments directly.
 
         Parameters:
@@ -569,7 +569,7 @@ class GeojsonFile:
 
     def get_feature(self, index):
         """
-        Gets a feature based on its index. Same as feat[index]. 
+        Gets a feature based on its index. Same as feat[index].
 
         Parameters:
 
@@ -577,55 +577,59 @@ class GeojsonFile:
 
         Returns:
 
-        - A Feature instance. 
+        - A Feature instance.
         """
         return self[index]
 
     def replace_feature(self, oldindex, newfeature):
         """
-        Replaces the feature at an index position with another. 
+        Replaces the feature at an index position with another.
 
         Parameters:
 
-        - **oldindex**: The index position of the feature to be replaced. 
+        - **oldindex**: The index position of the feature to be replaced.
         - **newfeature**: Anything that the Feature instance can accept.
         """
         self[oldindex] = newfeature
 
-    def remove_feature(oldindex):
+    def remove_feature(self, oldindex):
         """
-        Removes a feature at a specified index position. 
+        Removes a feature at a specified index position.
 
         Parameters:
 
-        - **oldindex**: The index position of the feature to be removed. 
+        - **oldindex**: The index position of the feature to be removed.
         """
         del self[oldindex]
 
+    @deprecated("Use add_feature() instead")
     def addfeature(self, feature):
         """
-        Backwards compatible legacy method. WARNING: Will be depreceated. 
+        Backwards compatible legacy method. WARNING: Will be deprecated.
         """
         self.add_feature(obj=feature)
 
+    @deprecated("Use get_feature() instead")
     def getfeature(self, index):
         """
-        Backwards compatible legacy method. WARNING: Will be depreceated. 
+        Backwards compatible legacy method. WARNING: Will be deprecated.
         """
-        self.get_feature(index)
+        return self.get_feature(index)
 
+    @deprecated("Use replace_feature() instead")
     def replacefeature(self, oldindex, newfeature):
         """
-        Backwards compatible legacy method. WARNING: Will be depreceated. 
+        Backwards compatible legacy method. WARNING: Will be deprecated.
         """
         self.replace_feature(oldindex, newfeature)
 
-    def removefeature(oldindex):
+    @deprecated("Use remove_feature() instead")
+    def removefeature(self, oldindex):
         """
-        Backwards compatible legacy method. WARNING: Will be depreceated. 
+        Backwards compatible legacy method. WARNING: Will be deprecated.
         """
         self.remove_feature(oldindex)
-        
+
     def define_crs(self, type, name=None, link=None, link_type=None):
         """
         Defines the coordinate reference system for the geojson file.
@@ -637,7 +641,7 @@ class GeojsonFile:
         - **type**: The type of crs, either "name" or "link".
         - **name** (optional): The crs name as an OGC formatted crs string (eg "urn:ogc:def:crs:..."), required if type is "name"
         - **link**: The crs online url link address, required if type is "link".
-        - **link_type**: The type of crs link, optional if type is "link". 
+        - **link_type**: The type of crs link, optional if type is "link".
         """
         if not type in ("name","link"): raise Exception("type must be either 'name' or 'link'")
         crs = self._data["crs"] = {"type":type, "properties":{} }
@@ -660,7 +664,7 @@ class GeojsonFile:
         """
 
         xmins, ymins, xmaxs, ymaxs = zip(*(feat.geometry.bbox for feat in self if feat.geometry.type != "Null"))
-        bbox = [min(xmins), min(ymins), max(xmaxs), max(ymaxs)] 
+        bbox = [min(xmins), min(ymins), max(xmaxs), max(ymaxs)]
         self._data["bbox"] = bbox
 
     def add_unique_id(self):
@@ -668,11 +672,11 @@ class GeojsonFile:
         Adds a unique id property to each feature.
 
         Raises:
-        
+
         - An Exception if any of the features already
-            have an "id" field. 
+            have an "id" field.
         """
-        
+
         uid = 0
         for feature in self._data["features"]:
             if feature["properties"].get("id"):
@@ -694,20 +698,20 @@ class GeojsonFile:
 
         Parameters:
 
-        - **savepath**: Filepath to save the file. 
+        - **savepath**: Filepath to save the file.
         """
-        
+
         self.update_bbox()
         tempfile = open(savepath,"w")
         json.dump(self._data, tempfile, **kwargs)
         tempfile.close()
-        
+
     def dumps(self):
         """
         Dumps the geojson instance as a string.
 
         """
-        
+
         self.update_bbox()
         return json.dumps(self._data)
 
@@ -716,7 +720,7 @@ class GeojsonFile:
     def _loadfilepath(self, filepath, **kwargs):
         """This loads a geojson file into a geojson python
         dictionary using the json module.
-        
+
         Note: to load with a different text encoding use the encoding argument.
         """
         with open(filepath, "r") as f:
@@ -725,7 +729,7 @@ class GeojsonFile:
 
     def _prepdata(self):
         """Adds potentially missing items to the geojson dictionary"""
-        
+
         # if missing, compute and add bbox
         if not self._data.get("bbox"):
             self.update_bbox()
@@ -734,8 +738,6 @@ class GeojsonFile:
         if not self._data.get("crs"):
             self._data["crs"] = {"type":"name",
                                "properties":{"name":"urn:ogc:def:crs:OGC:2:84"}}
-
-
 
 # User functions
 
@@ -772,7 +774,7 @@ def validate(data, skiperrors=False, fixerrors=True):
     else:
         for featuredict in data["features"]:
             feat = Feature(featuredict)
-            feat.validate(fixerrors) 
+            feat.validate(fixerrors)
 
     return True
 
@@ -805,15 +807,6 @@ def new():
 
     Returns:
 
-    - An empty GeojsonFile instance. 
+    - An empty GeojsonFile instance.
     """
     return GeojsonFile()
-
-
-
-
-
-
-    
-    
-            
