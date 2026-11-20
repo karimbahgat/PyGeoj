@@ -139,7 +139,7 @@ __version__ = "1.1.0"
 
 try:
     import simplejson as json
-except ImportError:
+except:
     import json
 from warnings import deprecated
 
