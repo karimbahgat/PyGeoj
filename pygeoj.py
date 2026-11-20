@@ -135,12 +135,13 @@ and modify according to the MIT license, see license.txt
 
 """
 
-__version__ = "1.0.1"
+__version__ = "1.1.0"
 
 try:
     import simplejson as json
-except:
+except ImportError:
     import json
+from warnings import deprecated
 
 class Geometry:
     """
@@ -591,7 +592,7 @@ class GeojsonFile:
         """
         self[oldindex] = newfeature
 
-    def remove_feature(oldindex):
+    def remove_feature(self, oldindex):
         """
         Removes a feature at a specified index position.
 
@@ -601,27 +602,31 @@ class GeojsonFile:
         """
         del self[oldindex]
 
+    @deprecated("Use add_feature() instead")
     def addfeature(self, feature):
         """
-        Backwards compatible legacy method. WARNING: Will be depreceated.
+        Backwards compatible legacy method. WARNING: Will be deprecated.
         """
         self.add_feature(obj=feature)
 
+    @deprecated("Use get_feature() instead")
     def getfeature(self, index):
         """
-        Backwards compatible legacy method. WARNING: Will be depreceated.
+        Backwards compatible legacy method. WARNING: Will be deprecated.
         """
-        self.get_feature(index)
+        return self.get_feature(index)
 
+    @deprecated("Use replace_feature() instead")
     def replacefeature(self, oldindex, newfeature):
         """
-        Backwards compatible legacy method. WARNING: Will be depreceated.
+        Backwards compatible legacy method. WARNING: Will be deprecated.
         """
         self.replace_feature(oldindex, newfeature)
 
-    def removefeature(oldindex):
+    @deprecated("Use remove_feature() instead")
+    def removefeature(self, oldindex):
         """
-        Backwards compatible legacy method. WARNING: Will be depreceated.
+        Backwards compatible legacy method. WARNING: Will be deprecated.
         """
         self.remove_feature(oldindex)
 

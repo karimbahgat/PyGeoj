@@ -1,9 +1,11 @@
 
 ## Changes
 
-### 1.0.1 (2026-11-20)
+### 1.1.0 (2026-11-20)
 
 - Fix: mark docstrings as raw string (to avoid syntax warnings in Python 3.15)
+- Fix: add 'self' and make getfeature() return the feature
+- Feat: add deprecated decorator to mark legacy methods as deprecated
 
 ### 1.0.0 (2018-09-14)
 
